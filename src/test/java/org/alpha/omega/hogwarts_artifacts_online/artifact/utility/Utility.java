@@ -4,6 +4,7 @@ import org.alpha.omega.hogwarts_artifacts_online.artifact.entity.Artifact;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Random;
 
 public class Utility {
@@ -22,5 +23,20 @@ public class Utility {
             artifacts.add(artifact);
         }
         return artifacts;
+    }
+
+    public static boolean areSameArtifacts(List<Artifact> expectedArtifacts, List<Artifact> artifactsToVerified) {
+        List<Artifact> notFoundArtifacts = new ArrayList<>();
+
+        expectedArtifacts.forEach(expectedArtifact -> {
+            Artifact foundArtifact = artifactsToVerified
+                    .stream().filter(artifactToVerified -> artifactToVerified.getId().equals(expectedArtifact.getId()))
+                    .findAny()
+                    .orElse(null);
+
+            if(foundArtifact == null)
+                notFoundArtifacts.add(expectedArtifact);
+        });
+        return notFoundArtifacts.isEmpty();
     }
 }

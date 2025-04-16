@@ -13,6 +13,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
+
 @RestController
 @RequestMapping(path = "/api/v1")
 @RequiredArgsConstructor
@@ -28,6 +30,17 @@ public class ArtifactController {
                         .code(HttpStatus.OK.value())
                         .message("Find One Success")
                         .data(ArtifactMapper.INSTANCE.toArtifactDTO(foundArtifact))
+                .build());
+    }
+
+    @GetMapping(path = "/artifacts", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Result> findAllArtifacts() {
+        List<Artifact> artifacts = this.service.findAll();
+        return ResponseEntity.ok(Result.builder()
+                .flag(Boolean.TRUE)
+                .code(HttpStatus.OK.value())
+                .message("Find One Success")
+                .data(ArtifactMapper.INSTANCE.toArtifactsDTOs(artifacts))
                 .build());
     }
 }

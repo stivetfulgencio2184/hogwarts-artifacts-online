@@ -8,6 +8,7 @@ import org.alpha.omega.hogwarts_artifacts_online.artifact.repository.ArtifactRep
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -21,5 +22,9 @@ public class ArtifactService {
         return this.repository.findById(id)
                 .orElseThrow(() -> new NotFoundException(
                         String.format(Constant.Exception.Artifact.NOT_FOUNT_ARTIFACT, id)));
+    }
+
+    public List<Artifact> findAll() {
+        return this.repository.findAll();
     }
 }

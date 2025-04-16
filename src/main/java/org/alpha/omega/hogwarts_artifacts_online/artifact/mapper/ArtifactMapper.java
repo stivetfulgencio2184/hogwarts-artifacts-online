@@ -6,6 +6,8 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.factory.Mappers;
 
+import java.util.List;
+
 @Mapper(uses = WizardMapper.class)
 public interface ArtifactMapper {
 
@@ -13,4 +15,6 @@ public interface ArtifactMapper {
 
     @Mapping(target = "owner", source = "artifact.wizard")
     ArtifactDTO toArtifactDTO(Artifact artifact);
+
+    List<ArtifactDTO> toArtifactsDTOs(List<Artifact> artifacts);
 }
