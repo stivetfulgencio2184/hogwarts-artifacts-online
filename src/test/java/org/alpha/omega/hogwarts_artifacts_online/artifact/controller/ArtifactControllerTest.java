@@ -8,6 +8,7 @@ import org.alpha.omega.hogwarts_artifacts_online.artifact.response.ArtifactDTO;
 import org.alpha.omega.hogwarts_artifacts_online.artifact.service.ArtifactService;
 import org.alpha.omega.hogwarts_artifacts_online.artifact.utility.Utility;
 import org.assertj.core.api.Assertions;
+import org.hamcrest.Matchers;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -80,5 +81,20 @@ class ArtifactControllerTest {
                 .andExpect(jsonPath("$.message").value(String
                         .format(ConstantTest.Exception.Artifact.NOT_FOUNT_ARTIFACT, ConstantTest.ARTIFACT_ID)))
                 .andExpect(jsonPath("$.data").isEmpty());
+    }
+
+    @Test
+    void testFindAllArtifacts() throws Exception {
+        // Given.
+        given(this.service.findAll()).willReturn(this.artifacts);
+
+        // When and Then
+        this.mvc.perform(get("/api/v1/artifacts").accept(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.flag").value(Boolean.TRUE))
+                .andExpect(jsonPath("$.code").value(HttpStatus.OK.value()))
+                .andExpect(jsonPath("$.message").value("Find One Success"))
+                .andExpect(jsonPath("$.data").isArray())
+                .andExpect(jsonPath("$.data", Matchers.hasSize(this.artifacts.size())))
+                .andExpect(jsonPath("$.data[0].id").value("1"));
     }
 }

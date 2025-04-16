@@ -5,6 +5,7 @@ import org.alpha.omega.hogwarts_artifacts_online.artifact.entity.Artifact;
 import org.alpha.omega.hogwarts_artifacts_online.artifact.entity.Wizard;
 import org.alpha.omega.hogwarts_artifacts_online.artifact.exception.NotFoundException;
 import org.alpha.omega.hogwarts_artifacts_online.artifact.repository.ArtifactRepository;
+import org.alpha.omega.hogwarts_artifacts_online.artifact.utility.Utility;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -14,6 +15,9 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -33,8 +37,11 @@ class ArtifactServiceTest {
     @InjectMocks
     ArtifactService service;
 
+    List<Artifact> artifacts = new ArrayList<>();
+
     @BeforeEach
     void setUp() {
+        this.artifacts = Utility.produceArtifacts(7);
     }
 
     @AfterEach
@@ -82,5 +89,34 @@ class ArtifactServiceTest {
         assertThat(thrown).isInstanceOf(NotFoundException.class)
                 .hasMessage(String.format(ConstantTest.Exception.Artifact.NOT_FOUNT_ARTIFACT, ConstantTest.ARTIFACT_ID));
         verify(this.repository, times(1)).findById(ConstantTest.ARTIFACT_ID);
+    }
+
+    @Test
+    void testFindAll() {
+        // Given.
+        given(this.repository.findAll()).willReturn(this.artifacts);
+
+        // When.
+        List<Artifact> artifacts = this.service.findAll();
+
+        // Then.
+        assertNotNull(artifacts);
+        assertEquals(this.artifacts.size(), artifacts.size());
+        assertTrue(Utility.areSameArtifacts(this.artifacts, artifacts));
+        verify(this.repository, times(1)).findAll();
+    }
+
+    @Test
+    void testFindAllEmpty() {
+        // Given.
+        given(this.repository.findAll()).willReturn(Collections.emptyList());
+
+        // When.
+        List<Artifact> artifacts = this.service.findAll();
+
+        // Then.
+        assertNotNull(artifacts);
+        assertTrue(artifacts.isEmpty());
+        verify(this.repository, times(1)).findAll();
     }
 }
