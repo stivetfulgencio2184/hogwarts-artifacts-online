@@ -1,17 +1,16 @@
 package org.alpha.omega.hogwarts_artifacts_online.artifact.controller;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.alpha.omega.hogwarts_artifacts_online.artifact.entity.Artifact;
 import org.alpha.omega.hogwarts_artifacts_online.artifact.mapper.ArtifactMapper;
+import org.alpha.omega.hogwarts_artifacts_online.artifact.request.ArtifactRequest;
 import org.alpha.omega.hogwarts_artifacts_online.artifact.response.Result;
 import org.alpha.omega.hogwarts_artifacts_online.artifact.service.ArtifactService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -41,6 +40,17 @@ public class ArtifactController {
                 .code(HttpStatus.OK.value())
                 .message("Find One Success")
                 .data(ArtifactMapper.INSTANCE.toArtifactsDTOs(artifacts))
+                .build());
+    }
+
+    @PostMapping(path = "/artifacts", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Result> addNewArtifact(@RequestBody @Valid ArtifactRequest newArtifact) {
+        Artifact savedArtifact = this.service.saveArtifact(ArtifactMapper.INSTANCE.toArtifact(newArtifact));
+        return ResponseEntity.status(HttpStatus.CREATED).body(Result.builder()
+                        .flag(Boolean.TRUE)
+                        .code(HttpStatus.CREATED.value())
+                        .message("Add Success")
+                        .data(ArtifactMapper.INSTANCE.toArtifactDTO(savedArtifact))
                 .build());
     }
 }
