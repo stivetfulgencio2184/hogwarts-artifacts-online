@@ -5,6 +5,7 @@ import org.alpha.omega.hogwarts_artifacts_online.artifact.entity.Artifact;
 import org.alpha.omega.hogwarts_artifacts_online.artifact.entity.Wizard;
 import org.alpha.omega.hogwarts_artifacts_online.artifact.exception.NotFoundException;
 import org.alpha.omega.hogwarts_artifacts_online.artifact.repository.ArtifactRepository;
+import org.alpha.omega.hogwarts_artifacts_online.artifact.utility.IdWorker;
 import org.alpha.omega.hogwarts_artifacts_online.artifact.utility.Utility;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -33,6 +34,9 @@ class ArtifactServiceTest {
 
     @Mock
     ArtifactRepository repository;
+
+    @Mock
+    IdWorker idWorker;
 
     @InjectMocks
     ArtifactService service;
@@ -118,5 +122,28 @@ class ArtifactServiceTest {
         assertNotNull(artifacts);
         assertTrue(artifacts.isEmpty());
         verify(this.repository, times(1)).findAll();
+    }
+
+    @Test
+    void testSaveArtifact() {
+        //Given
+        Artifact newArtifact = Artifact.builder()
+                .name("Artifact 3")
+                .description("Description...!!")
+                .imageUrl("imageUrl...!!")
+                .build();
+        given(this.idWorker.nextId()).willReturn(123456L);
+        given(this.repository.save(newArtifact)).willReturn(newArtifact);
+
+        //When
+        Artifact savedArtifact = this.service.saveArtifact(newArtifact);
+
+        //Then
+        assertNotNull(savedArtifact);
+        assertThat(savedArtifact.getId()).isEqualTo("123456");
+        assertThat(savedArtifact.getName()).isEqualTo(newArtifact.getName());
+        assertThat(savedArtifact.getDescription()).isEqualTo(newArtifact.getDescription());
+        assertThat(savedArtifact.getImageUrl()).isEqualTo(newArtifact.getImageUrl());
+        verify(this.repository, times(1)).save(newArtifact);
     }
 }

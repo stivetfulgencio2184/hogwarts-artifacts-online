@@ -1,6 +1,7 @@
 package org.alpha.omega.hogwarts_artifacts_online.artifact.mapper;
 
 import org.alpha.omega.hogwarts_artifacts_online.artifact.entity.Artifact;
+import org.alpha.omega.hogwarts_artifacts_online.artifact.request.ArtifactRequest;
 import org.alpha.omega.hogwarts_artifacts_online.artifact.response.ArtifactDTO;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -17,4 +18,6 @@ public interface ArtifactMapper {
     ArtifactDTO toArtifactDTO(Artifact artifact);
 
     List<ArtifactDTO> toArtifactsDTOs(List<Artifact> artifacts);
+
+    Artifact toArtifact(ArtifactRequest request);
 }

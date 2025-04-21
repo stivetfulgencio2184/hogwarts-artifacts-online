@@ -1,18 +1,16 @@
 package org.alpha.omega.hogwarts_artifacts_online.artifact.controller;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.alpha.omega.hogwarts_artifacts_online.artifact.constant.ConstantTest;
 import org.alpha.omega.hogwarts_artifacts_online.artifact.entity.Artifact;
 import org.alpha.omega.hogwarts_artifacts_online.artifact.exception.NotFoundException;
-import org.alpha.omega.hogwarts_artifacts_online.artifact.mapper.ArtifactMapper;
-import org.alpha.omega.hogwarts_artifacts_online.artifact.response.ArtifactDTO;
+import org.alpha.omega.hogwarts_artifacts_online.artifact.request.ArtifactRequest;
 import org.alpha.omega.hogwarts_artifacts_online.artifact.service.ArtifactService;
 import org.alpha.omega.hogwarts_artifacts_online.artifact.utility.Utility;
-import org.assertj.core.api.Assertions;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -23,10 +21,10 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.List;
-import java.util.Optional;
 
 import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 
 @SpringBootTest
@@ -38,6 +36,9 @@ class ArtifactControllerTest {
 
     @MockitoBean
     ArtifactService service;
+
+    @Autowired
+    ObjectMapper objectMapper;
 
     private List<Artifact> artifacts;
 
@@ -96,5 +97,63 @@ class ArtifactControllerTest {
                 .andExpect(jsonPath("$.data").isArray())
                 .andExpect(jsonPath("$.data", Matchers.hasSize(this.artifacts.size())))
                 .andExpect(jsonPath("$.data[0].id").value("1"));
+    }
+
+    @Test
+    void testAddNewArtifactOk() throws Exception {
+        // Given
+        ArtifactRequest request = ArtifactRequest.builder()
+                .name("Artifact 3")
+                .description("Description...!!")
+                .imageUrl("imageUrl...!!")
+                .build();
+        String json = this.objectMapper.writeValueAsString(request);
+        Artifact savedArtifact = Artifact.builder()
+                .id("123456")
+                .name(request.name())
+                .description(request.description())
+                .imageUrl(request.imageUrl())
+                .build();
+        given(this.service.saveArtifact(Mockito.any(Artifact.class))).willReturn(savedArtifact);
+
+        // When and Then
+        this.mvc.perform(post("/api/v1/artifacts")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(json)
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.flag").value(Boolean.TRUE))
+                .andExpect(jsonPath("$.code").value(HttpStatus.CREATED.value()))
+                .andExpect(jsonPath("$.message").value("Add Success"))
+                .andExpect(jsonPath("$.data.id").isNotEmpty())
+                .andExpect(jsonPath("$.data.id").value(savedArtifact.getId()))
+                .andExpect(jsonPath("$.data.name").value(savedArtifact.getName()))
+                .andExpect(jsonPath("$.data.description").value(savedArtifact.getDescription()))
+                .andExpect(jsonPath("$.data.imageUrl").value(savedArtifact.getImageUrl()))
+                .andExpect(jsonPath("$.data.owner").isEmpty());
+    }
+
+    @Test
+    void testAddNewArtifactBadRequest() throws Exception {
+        // Given
+        ArtifactRequest request = ArtifactRequest.builder()
+                .description("Description...!!")
+                .imageUrl("imageUrl...!!")
+                .build();
+        String json = this.objectMapper.writeValueAsString(request);
+
+        // When and Then
+        this.mvc.perform(post("/api/v1/artifacts")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(json)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.flag").value(Boolean.FALSE))
+                .andExpect(jsonPath("$.code").value(HttpStatus.BAD_REQUEST.value()))
+                .andExpect(jsonPath("$.message").value(ConstantTest.Exception.Artifact.INVALID_ARGUMENTS))
+                .andExpect(jsonPath("$.data").isArray())
+                .andExpect(jsonPath("$.data").isNotEmpty())
+                .andExpect(jsonPath("$.data[0].field").value("name"))
+                .andExpect(jsonPath("$.data[0].message").value("The artifact name should not empty."))
+                .andExpect(jsonPath("$.data[1].field").value("name"))
+                .andExpect(jsonPath("$.data[1].message").value("The artifact name is required."));
     }
 }
