@@ -53,4 +53,17 @@ public class ArtifactController {
                         .data(ArtifactMapper.INSTANCE.toArtifactDTO(savedArtifact))
                 .build());
     }
+
+    @PutMapping(path = "/artifacts/{artifactId}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Result> updateArtifact(@RequestBody @Valid ArtifactRequest artifactUpdate,
+                                                 @PathVariable(name = "artifactId") String id) {
+        Artifact artifact = ArtifactMapper.INSTANCE.toArtifact(artifactUpdate);
+        artifact.setId(id);
+        return ResponseEntity.ok(Result.builder()
+                        .flag(Boolean.TRUE)
+                        .code(HttpStatus.OK.value())
+                        .message("Update Success")
+                        .data(ArtifactMapper.INSTANCE.toArtifactDTO(this.service.update(artifact))
+                        ).build());
+    }
 }

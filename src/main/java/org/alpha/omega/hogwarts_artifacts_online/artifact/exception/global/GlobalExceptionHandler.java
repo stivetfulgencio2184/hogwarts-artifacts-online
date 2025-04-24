@@ -32,7 +32,7 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(Result.builder()
                 .flag(Boolean.FALSE)
                 .code(HttpStatus.BAD_REQUEST.value())
-                .message(Constant.Exception.Artifact.INVALID_ARGUMENTS)
+                .message(Constant.CustomExMessage.Artifact.INVALID_ARGUMENTS)
                 .data(exception.getFieldErrors().stream()
                         .filter(Objects::nonNull)
                         .map(fieldError -> FieldError.builder()

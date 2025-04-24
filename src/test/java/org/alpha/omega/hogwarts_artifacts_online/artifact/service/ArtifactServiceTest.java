@@ -146,4 +146,57 @@ class ArtifactServiceTest {
         assertThat(savedArtifact.getImageUrl()).isEqualTo(newArtifact.getImageUrl());
         verify(this.repository, times(1)).save(newArtifact);
     }
+
+    @Test
+    void testUpdateNotFound() {
+        // Given
+        Artifact artifactUpdated = Artifact.builder()
+                .id(ConstantTest.ARTIFACT_ID)
+                .name("updated name.")
+                .description("updated description.")
+                .imageUrl("updated image url.")
+                .build();
+        given(this.repository.findById(ConstantTest.ARTIFACT_ID)).willReturn(Optional.empty());
+
+        // When
+        Throwable thrown = catchThrowable(() -> {
+           Artifact updatedArtifact = this.service.update(artifactUpdated);
+        });
+
+        // Then
+        assertThat(thrown).isInstanceOf(NotFoundException.class)
+                .hasMessage(String.format(ConstantTest.Exception.Artifact.NOT_FOUNT_ARTIFACT, ConstantTest.ARTIFACT_ID));
+        verify(this.repository, times(1)).findById(ConstantTest.ARTIFACT_ID);
+    }
+
+    @Test
+    void testUpdateSuccess() {
+        // Given
+        Artifact artifactUpdated = Artifact.builder()
+                .id(ConstantTest.ARTIFACT_ID)
+                .name("updated name.")
+                .description("updated description.")
+                .imageUrl("updated image url.")
+                .build();
+
+        Artifact artifactToUpdate = Artifact.builder()
+                .id(ConstantTest.ARTIFACT_ID)
+                .name("this is its name.")
+                .description("this is its description.")
+                .imageUrl("this is its image url.")
+                .build();
+        given(this.repository.findById(ConstantTest.ARTIFACT_ID)).willReturn(Optional.of(artifactToUpdate));
+        given(this.repository.save(artifactToUpdate)).willReturn(artifactToUpdate);
+
+        // When
+        Artifact artifact = this.service.update(artifactUpdated);
+
+        // Then
+        assertNotNull(artifact);
+        assertThat(artifact.getName()).isEqualTo(artifactUpdated.getName());
+        assertThat(artifact.getDescription()).isEqualTo(artifactUpdated.getDescription());
+        assertThat(artifact.getImageUrl()).isEqualTo(artifactUpdated.getImageUrl());
+        verify(this.repository, times(1)).findById(ConstantTest.ARTIFACT_ID);
+        verify(this.repository, times(1)).save(artifactToUpdate);
+    }
 }

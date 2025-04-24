@@ -23,7 +23,7 @@ public class ArtifactService {
     public Artifact findById(String id) {
         return this.repository.findById(id)
                 .orElseThrow(() -> new NotFoundException(
-                        String.format(Constant.Exception.Artifact.NOT_FOUNT_ARTIFACT, id)));
+                        String.format(Constant.CustomExMessage.Artifact.NOT_FOUNT_ARTIFACT, id)));
     }
 
     public List<Artifact> findAll() {
@@ -33,5 +33,18 @@ public class ArtifactService {
     public Artifact saveArtifact(Artifact newArtifact) {
         newArtifact.setId(String.valueOf(this.idWorker.nextId()));
         return this.repository.save(newArtifact);
+    }
+
+    public Artifact update(Artifact artifactUpdated) {
+        String artifactId = artifactUpdated.getId();
+        return this.repository.findById(artifactId)
+                .map(artifactToUpdate -> {
+                    artifactToUpdate.setName(artifactUpdated.getName());
+                    artifactToUpdate.setDescription(artifactUpdated.getDescription());
+                    artifactToUpdate.setImageUrl(artifactUpdated.getImageUrl());
+                    return this.repository.save(artifactToUpdate);
+                }).orElseThrow(() ->
+                    new NotFoundException(
+                            String.format(Constant.CustomExMessage.Artifact.NOT_FOUNT_ARTIFACT, artifactId)));
     }
 }
