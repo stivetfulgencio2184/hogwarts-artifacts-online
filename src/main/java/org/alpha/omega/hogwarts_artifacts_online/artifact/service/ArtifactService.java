@@ -47,4 +47,11 @@ public class ArtifactService {
                     new NotFoundException(
                             String.format(Constant.CustomExMessage.Artifact.NOT_FOUNT_ARTIFACT, artifactId)));
     }
+
+    public void delete(String artifactId) {
+        Artifact artifactToDelete = this.repository.findById(artifactId)
+                .orElseThrow(() -> new NotFoundException(
+                        String.format(Constant.CustomExMessage.Artifact.NOT_FOUNT_ARTIFACT, artifactId)));
+        this.repository.delete(artifactToDelete);
+    }
 }

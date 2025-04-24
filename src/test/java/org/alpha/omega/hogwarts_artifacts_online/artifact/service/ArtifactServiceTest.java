@@ -1,6 +1,6 @@
 package org.alpha.omega.hogwarts_artifacts_online.artifact.service;
 
-import org.alpha.omega.hogwarts_artifacts_online.artifact.constant.ConstantTest;
+import org.alpha.omega.hogwarts_artifacts_online.artifact.constant.TestConstant;
 import org.alpha.omega.hogwarts_artifacts_online.artifact.entity.Artifact;
 import org.alpha.omega.hogwarts_artifacts_online.artifact.entity.Wizard;
 import org.alpha.omega.hogwarts_artifacts_online.artifact.exception.NotFoundException;
@@ -25,6 +25,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.catchThrowable;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.willDoNothing;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
@@ -50,6 +51,7 @@ class ArtifactServiceTest {
 
     @AfterEach
     void tearDown() {
+        // In this section go all logic for tear down
     }
 
     @Test
@@ -60,23 +62,23 @@ class ArtifactServiceTest {
                 .name("")
                 .build();
         Artifact artifact = Artifact.builder()
-                .id(ConstantTest.ARTIFACT_ID)
+                .id(TestConstant.ARTIFACT_ID)
                 .name("Invisibility Cloak")
                 .description("An invisibility cloak is used to make the wearer invisibility.")
                 .imageUrl("")
                 .wizard(wizard)
                 .build();
         // Defines the behavior of the mock object.
-        given(this.repository.findById(ConstantTest.ARTIFACT_ID)).willReturn(Optional.of(artifact));
+        given(this.repository.findById(TestConstant.ARTIFACT_ID)).willReturn(Optional.of(artifact));
 
         // When. Act on the target behavior. When steps should cover the method to be tested.
-        Artifact returnedArtifact = this.service.findById(ConstantTest.ARTIFACT_ID);
+        Artifact returnedArtifact = this.service.findById(TestConstant.ARTIFACT_ID);
 
         // Then. Assert expected outcomes.
         assertNotNull(returnedArtifact);
         assertThat(returnedArtifact).isEqualTo(artifact);
         assertThat(returnedArtifact.getId()).isEqualTo(artifact.getId());
-        verify(this.repository, times(1)).findById(ConstantTest.ARTIFACT_ID);
+        verify(this.repository, times(1)).findById(TestConstant.ARTIFACT_ID);
     }
 
     @Test
@@ -86,13 +88,13 @@ class ArtifactServiceTest {
 
         // When.
         Throwable thrown = catchThrowable(() -> {
-            Artifact returnedArtifact = this.service.findById(ConstantTest.ARTIFACT_ID);
+            this.service.findById(TestConstant.ARTIFACT_ID);
         });
 
         // Then.
         assertThat(thrown).isInstanceOf(NotFoundException.class)
-                .hasMessage(String.format(ConstantTest.Exception.Artifact.NOT_FOUNT_ARTIFACT, ConstantTest.ARTIFACT_ID));
-        verify(this.repository, times(1)).findById(ConstantTest.ARTIFACT_ID);
+                .hasMessage(String.format(TestConstant.Exception.Artifact.NOT_FOUNT_ARTIFACT, TestConstant.ARTIFACT_ID));
+        verify(this.repository, times(1)).findById(TestConstant.ARTIFACT_ID);
     }
 
     @Test
@@ -101,12 +103,12 @@ class ArtifactServiceTest {
         given(this.repository.findAll()).willReturn(this.artifacts);
 
         // When.
-        List<Artifact> artifacts = this.service.findAll();
+        List<Artifact> allArtifacts = this.service.findAll();
 
         // Then.
-        assertNotNull(artifacts);
-        assertEquals(this.artifacts.size(), artifacts.size());
-        assertTrue(Utility.areSameArtifacts(this.artifacts, artifacts));
+        assertNotNull(allArtifacts);
+        assertEquals(this.artifacts.size(), allArtifacts.size());
+        assertTrue(Utility.areSameArtifacts(this.artifacts, allArtifacts));
         verify(this.repository, times(1)).findAll();
     }
 
@@ -116,11 +118,11 @@ class ArtifactServiceTest {
         given(this.repository.findAll()).willReturn(Collections.emptyList());
 
         // When.
-        List<Artifact> artifacts = this.service.findAll();
+        List<Artifact> allArtifacts = this.service.findAll();
 
         // Then.
-        assertNotNull(artifacts);
-        assertTrue(artifacts.isEmpty());
+        assertNotNull(allArtifacts);
+        assertTrue(allArtifacts.isEmpty());
         verify(this.repository, times(1)).findAll();
     }
 
@@ -151,41 +153,41 @@ class ArtifactServiceTest {
     void testUpdateNotFound() {
         // Given
         Artifact artifactUpdated = Artifact.builder()
-                .id(ConstantTest.ARTIFACT_ID)
+                .id(TestConstant.ARTIFACT_ID)
                 .name("updated name.")
                 .description("updated description.")
                 .imageUrl("updated image url.")
                 .build();
-        given(this.repository.findById(ConstantTest.ARTIFACT_ID)).willReturn(Optional.empty());
+        given(this.repository.findById(TestConstant.ARTIFACT_ID)).willReturn(Optional.empty());
 
         // When
         Throwable thrown = catchThrowable(() -> {
-           Artifact updatedArtifact = this.service.update(artifactUpdated);
+           this.service.update(artifactUpdated);
         });
 
         // Then
         assertThat(thrown).isInstanceOf(NotFoundException.class)
-                .hasMessage(String.format(ConstantTest.Exception.Artifact.NOT_FOUNT_ARTIFACT, ConstantTest.ARTIFACT_ID));
-        verify(this.repository, times(1)).findById(ConstantTest.ARTIFACT_ID);
+                .hasMessage(String.format(TestConstant.Exception.Artifact.NOT_FOUNT_ARTIFACT, TestConstant.ARTIFACT_ID));
+        verify(this.repository, times(1)).findById(TestConstant.ARTIFACT_ID);
     }
 
     @Test
     void testUpdateSuccess() {
         // Given
         Artifact artifactUpdated = Artifact.builder()
-                .id(ConstantTest.ARTIFACT_ID)
+                .id(TestConstant.ARTIFACT_ID)
                 .name("updated name.")
                 .description("updated description.")
                 .imageUrl("updated image url.")
                 .build();
 
         Artifact artifactToUpdate = Artifact.builder()
-                .id(ConstantTest.ARTIFACT_ID)
+                .id(TestConstant.ARTIFACT_ID)
                 .name("this is its name.")
                 .description("this is its description.")
                 .imageUrl("this is its image url.")
                 .build();
-        given(this.repository.findById(ConstantTest.ARTIFACT_ID)).willReturn(Optional.of(artifactToUpdate));
+        given(this.repository.findById(TestConstant.ARTIFACT_ID)).willReturn(Optional.of(artifactToUpdate));
         given(this.repository.save(artifactToUpdate)).willReturn(artifactToUpdate);
 
         // When
@@ -196,7 +198,39 @@ class ArtifactServiceTest {
         assertThat(artifact.getName()).isEqualTo(artifactUpdated.getName());
         assertThat(artifact.getDescription()).isEqualTo(artifactUpdated.getDescription());
         assertThat(artifact.getImageUrl()).isEqualTo(artifactUpdated.getImageUrl());
-        verify(this.repository, times(1)).findById(ConstantTest.ARTIFACT_ID);
+        verify(this.repository, times(1)).findById(TestConstant.ARTIFACT_ID);
         verify(this.repository, times(1)).save(artifactToUpdate);
+    }
+
+    @Test
+    void testDelete() {
+        // Given
+        Artifact artifactToDelete = Artifact.builder()
+                .id(TestConstant.ARTIFACT_ID)
+                .name("Deluminator")
+                .description("A deluminator is a device invented by Albus ")
+                .imageUrl("first imageUrl")
+                .build();
+        given(this.repository.findById(TestConstant.ARTIFACT_ID)).willReturn(Optional.of(artifactToDelete));
+        willDoNothing().given(this.repository).delete(artifactToDelete);
+
+        // When
+        this.service.delete(TestConstant.ARTIFACT_ID);
+
+        // Then
+        verify(this.repository, times(1)).findById(TestConstant.ARTIFACT_ID);
+        verify(this.repository, times(1)).delete(artifactToDelete);
+    }
+
+    @Test
+    void testDeleteNotFound() {
+        // Given
+        given(this.repository.findById(TestConstant.ARTIFACT_ID)).willReturn(Optional.empty());
+
+        // When
+        assertThrows(NotFoundException.class, () -> this.service.delete(TestConstant.ARTIFACT_ID));
+
+        // Then
+        verify(this.repository, times(1)).findById(TestConstant.ARTIFACT_ID);
     }
 }

@@ -15,13 +15,13 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping(path = "/api/v1")
+@RequestMapping(path = "/api/v1/artifacts")
 @RequiredArgsConstructor
 public class ArtifactController {
 
     private final ArtifactService service;
 
-    @GetMapping(path = "/artifacts/{artifactId}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(path = "/{artifactId}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Result> findArtifactById(@PathVariable(name = "artifactId") String id) {
         Artifact foundArtifact = this.service.findById(id);
         return ResponseEntity.ok(Result.builder()
@@ -32,7 +32,7 @@ public class ArtifactController {
                 .build());
     }
 
-    @GetMapping(path = "/artifacts", produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(path = "", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Result> findAllArtifacts() {
         List<Artifact> artifacts = this.service.findAll();
         return ResponseEntity.ok(Result.builder()
@@ -43,7 +43,7 @@ public class ArtifactController {
                 .build());
     }
 
-    @PostMapping(path = "/artifacts", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(path = "", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Result> addNewArtifact(@RequestBody @Valid ArtifactRequest newArtifact) {
         Artifact savedArtifact = this.service.saveArtifact(ArtifactMapper.INSTANCE.toArtifact(newArtifact));
         return ResponseEntity.status(HttpStatus.CREATED).body(Result.builder()
@@ -54,7 +54,7 @@ public class ArtifactController {
                 .build());
     }
 
-    @PutMapping(path = "/artifacts/{artifactId}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @PutMapping(path = "/{artifactId}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Result> updateArtifact(@RequestBody @Valid ArtifactRequest artifactUpdate,
                                                  @PathVariable(name = "artifactId") String id) {
         Artifact artifact = ArtifactMapper.INSTANCE.toArtifact(artifactUpdate);
@@ -65,5 +65,15 @@ public class ArtifactController {
                         .message("Update Success")
                         .data(ArtifactMapper.INSTANCE.toArtifactDTO(this.service.update(artifact))
                         ).build());
+    }
+
+    @DeleteMapping(path = "/{artifactId}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Result> deleteArtifact(@PathVariable(name = "artifactId") String id) {
+        this.service.delete(id);
+        return ResponseEntity.ok(Result.builder()
+                        .flag(Boolean.TRUE)
+                        .code(HttpStatus.OK.value())
+                        .message("Delete Success")
+                .build());
     }
 }
