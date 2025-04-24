@@ -1,23 +1,27 @@
 package org.alpha.omega.hogwarts_artifacts_online.artifact.utility;
 
+import lombok.Getter;
+
 import java.util.Random;
 
 public class IdWorker {
 
+    @Getter
     private final long workerId;
+    @Getter
     private final long datacenterId;
     private final long idepoch;
 
-    private static final long workerIdBits = 5L;
-    private static final long datacenterIdBits = 5L;
-    private static final long maxWorkerId = -1L ^ (-1L << workerIdBits);
-    private static final long maxDatacenterId = -1L ^ (-1L << datacenterIdBits);
+    private static final long WORKER_ID_BITS = 5L;
+    private static final long DATACENTER_ID_BITS = 5L;
+    private static final long MAX_WORKER_ID = -1L ^ (-1L << WORKER_ID_BITS);
+    private static final long MAX_DATACENTER_ID = -1L ^ (-1L << DATACENTER_ID_BITS);
 
-    private static final long sequenceBits = 12L;
-    private static final long workerIdShift = sequenceBits;
-    private static final long datacenterIdShift = sequenceBits + workerIdBits;
-    private static final long timestampLeftShift = sequenceBits + workerIdBits + datacenterIdBits;
-    private static final long sequenceMask = -1L ^ (-1L << sequenceBits);
+    private static final long SEQUENCE_BITS = 12L;
+    private static final long WORKER_ID_SHIFT = SEQUENCE_BITS;
+    private static final long DATACENTER_ID_SHIFT = SEQUENCE_BITS + WORKER_ID_BITS;
+    private static final long TIMESTAMP_LEFT_SHIFT = SEQUENCE_BITS + WORKER_ID_BITS + DATACENTER_ID_BITS;
+    private static final long SEQUENCE_MASK = -1L ^ (-1L << SEQUENCE_BITS);
 
     private long lastTimestamp = -1L;
     private long sequence;
@@ -28,7 +32,7 @@ public class IdWorker {
     }
 
     public IdWorker(long idepoch) {
-        this(r.nextInt((int) maxWorkerId), r.nextInt((int) maxDatacenterId), 0, idepoch);
+        this(r.nextInt((int) MAX_WORKER_ID), r.nextInt((int) MAX_DATACENTER_ID), 0, idepoch);
     }
 
     public IdWorker(long workerId, long datacenterId, long sequence) {
@@ -41,10 +45,10 @@ public class IdWorker {
         this.datacenterId = datacenterId;
         this.sequence = sequence;
         this.idepoch = idepoch;
-        if (workerId < 0 || workerId > maxWorkerId) {
+        if (workerId < 0 || workerId > MAX_WORKER_ID) {
             throw new IllegalArgumentException("workerId is illegal: " + workerId);
         }
-        if (datacenterId < 0 || datacenterId > maxDatacenterId) {
+        if (datacenterId < 0 || datacenterId > MAX_DATACENTER_ID) {
             throw new IllegalArgumentException("datacenterId is illegal: " + workerId);
         }
         if (idepoch >= System.currentTimeMillis()) {
@@ -52,21 +56,12 @@ public class IdWorker {
         }
     }
 
-    public long getDatacenterId() {
-        return datacenterId;
-    }
-
-    public long getWorkerId() {
-        return workerId;
-    }
-
     public long getTime() {
         return System.currentTimeMillis();
     }
 
     public long getId() {
-        long id = nextId();
-        return id;
+        return nextId();
     }
 
     public synchronized long nextId() {
@@ -75,7 +70,7 @@ public class IdWorker {
             throw new IllegalStateException("Clock moved backwards.");
         }
         if (lastTimestamp == timestamp) {
-            sequence = (sequence + 1) & sequenceMask;
+            sequence = (sequence + 1) & SEQUENCE_MASK;
             if (sequence == 0) {
                 timestamp = tilNextMillis(lastTimestamp);
             }
@@ -83,11 +78,10 @@ public class IdWorker {
             sequence = 0;
         }
         lastTimestamp = timestamp;
-        long id = ((timestamp - idepoch) << timestampLeftShift)//
-                | (datacenterId << datacenterIdShift)//
-                | (workerId << workerIdShift)//
+        return ((timestamp - idepoch) << TIMESTAMP_LEFT_SHIFT)//
+                | (datacenterId << DATACENTER_ID_SHIFT)//
+                | (workerId << WORKER_ID_SHIFT)//
                 | sequence;
-        return id;
     }
 
     /**
@@ -96,7 +90,7 @@ public class IdWorker {
      * @return the timestamp of id
      */
     public long getIdTimestamp(long id){
-        return idepoch + (id >> timestampLeftShift);
+        return idepoch + (id >> TIMESTAMP_LEFT_SHIFT);
     }
 
     private long tilNextMillis(long lastTimestamp) {

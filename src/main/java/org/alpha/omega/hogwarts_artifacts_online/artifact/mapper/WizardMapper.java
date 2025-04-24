@@ -3,7 +3,6 @@ package org.alpha.omega.hogwarts_artifacts_online.artifact.mapper;
 import org.alpha.omega.hogwarts_artifacts_online.artifact.entity.Wizard;
 import org.alpha.omega.hogwarts_artifacts_online.artifact.response.WizardDTO;
 import org.mapstruct.Mapper;
-import org.mapstruct.Mappings;
 import org.mapstruct.factory.Mappers;
 
 @Mapper

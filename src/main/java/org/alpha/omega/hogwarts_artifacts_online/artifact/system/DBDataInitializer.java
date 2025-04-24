@@ -28,37 +28,37 @@ public class DBDataInitializer implements CommandLineRunner {
                 .id("425344871")
                 .name("Deluminator")
                 .description("A deluminator is a device invented by Albus ")
-                .imageUrl("imageUrl")
+                .imageUrl("first imageUrl")
                 .build();
         Artifact secondArtifact = Artifact.builder()
                 .id("425344872")
                 .name("Invisibility Cloak")
                 .description("A invisibility cloak is used to make the wearer")
-                .imageUrl("imageUrl")
+                .imageUrl("second imageUrl")
                 .build();
         Artifact thirdArtifact = Artifact.builder()
                 .id("425344873")
                 .name("Elder Wand")
                 .description("The Elder Wand, know throughout history as the")
-                .imageUrl("imageUrl")
+                .imageUrl("third imageUrl")
                 .build();
         Artifact fourthArtifact = Artifact.builder()
                 .id("425344874")
                 .name("The Marauder's Map")
                 .description("A magical map of Hogwarts created by Remus Lupin")
-                .imageUrl("imageUrl")
+                .imageUrl("fourth imageUrl")
                 .build();
         Artifact fifthArtifact = Artifact.builder()
                 .id("425344875")
                 .name("The Sword of Gryffindor")
                 .description("A goblin-made sword adorned with large rubies on")
-                .imageUrl("imageUrl")
+                .imageUrl("fifth imageUrl")
                 .build();
         Artifact sixthArtifact = Artifact.builder()
                 .id("425344876")
                 .name("Resurrection stone")
                 .description("The resurrection stone allows the holder to")
-                .imageUrl("imageUrl")
+                .imageUrl("sixth imageUrl")
                 .build();
 
         Wizard firstWizard = Wizard.builder()
