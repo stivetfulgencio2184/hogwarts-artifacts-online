@@ -4,8 +4,6 @@ import org.alpha.omega.hogwarts_artifacts_online.artifact.entity.Artifact;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
-import java.util.Random;
 
 public class Utility {
 

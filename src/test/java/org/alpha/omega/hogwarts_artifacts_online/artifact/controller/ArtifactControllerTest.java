@@ -1,7 +1,7 @@
 package org.alpha.omega.hogwarts_artifacts_online.artifact.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.alpha.omega.hogwarts_artifacts_online.artifact.constant.ConstantTest;
+import org.alpha.omega.hogwarts_artifacts_online.artifact.constant.TestConstant;
 import org.alpha.omega.hogwarts_artifacts_online.artifact.entity.Artifact;
 import org.alpha.omega.hogwarts_artifacts_online.artifact.exception.NotFoundException;
 import org.alpha.omega.hogwarts_artifacts_online.artifact.mapper.ArtifactMapper;
@@ -24,6 +24,8 @@ import org.springframework.test.web.servlet.MockMvc;
 import java.util.List;
 
 import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.willDoNothing;
+import static org.mockito.Mockito.doThrow;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -50,6 +52,7 @@ class ArtifactControllerTest {
 
     @AfterEach
     void tearDown() {
+        // In this section go all logic for tear down
     }
 
     @Test
@@ -74,14 +77,14 @@ class ArtifactControllerTest {
         // Given.
         given(this.service.findById(Mockito.anyString()))
                 .willThrow(new NotFoundException(String
-                        .format(ConstantTest.Exception.Artifact.NOT_FOUNT_ARTIFACT, ConstantTest.ARTIFACT_ID)));
+                        .format(TestConstant.Exception.Artifact.NOT_FOUNT_ARTIFACT, TestConstant.ARTIFACT_ID)));
 
         // When and Then
         this.mvc.perform(get("/api/v1/artifacts/10435344876").accept(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.flag").value(Boolean.FALSE))
                 .andExpect(jsonPath("$.code").value(HttpStatus.NOT_FOUND.value()))
                 .andExpect(jsonPath("$.message").value(String
-                        .format(ConstantTest.Exception.Artifact.NOT_FOUNT_ARTIFACT, ConstantTest.ARTIFACT_ID)))
+                        .format(TestConstant.Exception.Artifact.NOT_FOUNT_ARTIFACT, TestConstant.ARTIFACT_ID)))
                 .andExpect(jsonPath("$.data").isEmpty());
     }
 
@@ -149,7 +152,7 @@ class ArtifactControllerTest {
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.flag").value(Boolean.FALSE))
                 .andExpect(jsonPath("$.code").value(HttpStatus.BAD_REQUEST.value()))
-                .andExpect(jsonPath("$.message").value(ConstantTest.Exception.Artifact.INVALID_ARGUMENTS))
+                .andExpect(jsonPath("$.message").value(TestConstant.Exception.Artifact.INVALID_ARGUMENTS))
                 .andExpect(jsonPath("$.data").isNotEmpty())
                 .andExpect(jsonPath("$.data").isArray())
                 .andExpect(jsonPath("$.data[0].field").value("name"))
@@ -165,12 +168,12 @@ class ArtifactControllerTest {
                 .imageUrl("updated image url.")
                 .build();
         Artifact artifactUpdated = ArtifactMapper.INSTANCE.toArtifact(request);
-        artifactUpdated.setId(ConstantTest.ARTIFACT_ID);
+        artifactUpdated.setId(TestConstant.ARTIFACT_ID);
         String json = this.objectMapper.writeValueAsString(request);
         given(this.service.update(Mockito.any(Artifact.class))).willReturn(artifactUpdated);
 
         // When and Then
-        this.mvc.perform(put("/api/v1/artifacts/{artifactId}", ConstantTest.ARTIFACT_ID)
+        this.mvc.perform(put("/api/v1/artifacts/{artifactId}", TestConstant.ARTIFACT_ID)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(json)
                         .accept(MediaType.APPLICATION_JSON))
@@ -196,17 +199,49 @@ class ArtifactControllerTest {
         String json = this.objectMapper.writeValueAsString(request);
 
         // When and Then
-        this.mvc.perform(put("/api/v1/artifacts/{artifactId}", ConstantTest.ARTIFACT_ID)
+        this.mvc.perform(put("/api/v1/artifacts/{artifactId}", TestConstant.ARTIFACT_ID)
                     .contentType(MediaType.APPLICATION_JSON)
                     .content(json)
                     .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.flag").value(Boolean.FALSE))
                 .andExpect(jsonPath("$.code").value(HttpStatus.BAD_REQUEST.value()))
-                .andExpect(jsonPath("$.message").value(ConstantTest.Exception.Artifact.INVALID_ARGUMENTS))
+                .andExpect(jsonPath("$.message").value(TestConstant.Exception.Artifact.INVALID_ARGUMENTS))
                 .andExpect(jsonPath("$.data").isNotEmpty())
                 .andExpect(jsonPath("$.data").isArray())
                 .andExpect(jsonPath("$.data[0].field").value("name"))
                 .andExpect(jsonPath("$.data[1].field").value("name"));
+    }
+
+    @Test
+    void testDeleteArtifact() throws Exception {
+        // Given
+        willDoNothing().given(this.service).delete(TestConstant.ARTIFACT_ID);
+
+        // When and Then
+        this.mvc.perform(delete("/api/v1/artifacts/{artifactId}", TestConstant.ARTIFACT_ID))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.flag").value(Boolean.TRUE))
+                .andExpect(jsonPath("$.code").value(HttpStatus.OK.value()))
+                .andExpect(jsonPath("$.message").value("Delete Success"))
+                .andExpect(jsonPath("$.data").isEmpty());
+
+    }
+
+    @Test
+    void testDeleteArtifactErrorWithNonExistentId() throws Exception {
+        // Given
+        doThrow(new NotFoundException(String.format(
+                TestConstant.Exception.Artifact.NOT_FOUNT_ARTIFACT, TestConstant.ARTIFACT_ID)))
+                .when(this.service).delete(TestConstant.ARTIFACT_ID);
+
+        // When and Then
+        this.mvc.perform(delete("/api/v1/artifacts/{artifactId}", TestConstant.ARTIFACT_ID))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.flag").value(Boolean.FALSE))
+                .andExpect(jsonPath("$.code").value(HttpStatus.NOT_FOUND.value()))
+                .andExpect(jsonPath("$.message").value(String.format(
+                        TestConstant.Exception.Artifact.NOT_FOUNT_ARTIFACT, TestConstant.ARTIFACT_ID)))
+                .andExpect(jsonPath("$.data").isEmpty());
     }
 }
