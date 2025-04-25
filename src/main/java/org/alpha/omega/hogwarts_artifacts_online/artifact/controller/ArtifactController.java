@@ -2,10 +2,10 @@ package org.alpha.omega.hogwarts_artifacts_online.artifact.controller;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.alpha.omega.hogwarts_artifacts_online.artifact.entity.Artifact;
+import org.alpha.omega.hogwarts_artifacts_online.entity.Artifact;
 import org.alpha.omega.hogwarts_artifacts_online.artifact.mapper.ArtifactMapper;
 import org.alpha.omega.hogwarts_artifacts_online.artifact.request.ArtifactRequest;
-import org.alpha.omega.hogwarts_artifacts_online.artifact.response.Result;
+import org.alpha.omega.hogwarts_artifacts_online.response.Result;
 import org.alpha.omega.hogwarts_artifacts_online.artifact.service.ArtifactService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;

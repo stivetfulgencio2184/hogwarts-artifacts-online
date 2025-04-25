@@ -1,8 +1,9 @@
 package org.alpha.omega.hogwarts_artifacts_online.artifact.mapper;
 
-import org.alpha.omega.hogwarts_artifacts_online.artifact.entity.Artifact;
+import org.alpha.omega.hogwarts_artifacts_online.entity.Artifact;
 import org.alpha.omega.hogwarts_artifacts_online.artifact.request.ArtifactRequest;
-import org.alpha.omega.hogwarts_artifacts_online.artifact.response.ArtifactDTO;
+import org.alpha.omega.hogwarts_artifacts_online.response.dto.ArtifactDTO;
+import org.alpha.omega.hogwarts_artifacts_online.wizard.mapper.WizardMapper;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.factory.Mappers;
