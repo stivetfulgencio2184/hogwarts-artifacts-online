@@ -1,12 +1,12 @@
 package org.alpha.omega.hogwarts_artifacts_online.artifact.service;
 
-import org.alpha.omega.hogwarts_artifacts_online.artifact.constant.TestConstant;
-import org.alpha.omega.hogwarts_artifacts_online.artifact.entity.Artifact;
-import org.alpha.omega.hogwarts_artifacts_online.artifact.entity.Wizard;
-import org.alpha.omega.hogwarts_artifacts_online.artifact.exception.NotFoundException;
+import org.alpha.omega.hogwarts_artifacts_online.common.constant.TestConstant;
+import org.alpha.omega.hogwarts_artifacts_online.entity.Artifact;
+import org.alpha.omega.hogwarts_artifacts_online.entity.Wizard;
+import org.alpha.omega.hogwarts_artifacts_online.common.exception.NotFoundException;
 import org.alpha.omega.hogwarts_artifacts_online.artifact.repository.ArtifactRepository;
-import org.alpha.omega.hogwarts_artifacts_online.artifact.utility.IdWorker;
-import org.alpha.omega.hogwarts_artifacts_online.artifact.utility.Utility;
+import org.alpha.omega.hogwarts_artifacts_online.common.utility.IdWorker;
+import org.alpha.omega.hogwarts_artifacts_online.common.utility.Utility;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

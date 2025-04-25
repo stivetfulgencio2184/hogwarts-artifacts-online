@@ -1,13 +1,13 @@
 package org.alpha.omega.hogwarts_artifacts_online.artifact.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.alpha.omega.hogwarts_artifacts_online.artifact.constant.TestConstant;
-import org.alpha.omega.hogwarts_artifacts_online.artifact.entity.Artifact;
-import org.alpha.omega.hogwarts_artifacts_online.artifact.exception.NotFoundException;
+import org.alpha.omega.hogwarts_artifacts_online.common.constant.TestConstant;
+import org.alpha.omega.hogwarts_artifacts_online.entity.Artifact;
+import org.alpha.omega.hogwarts_artifacts_online.common.exception.NotFoundException;
 import org.alpha.omega.hogwarts_artifacts_online.artifact.mapper.ArtifactMapper;
 import org.alpha.omega.hogwarts_artifacts_online.artifact.request.ArtifactRequest;
 import org.alpha.omega.hogwarts_artifacts_online.artifact.service.ArtifactService;
-import org.alpha.omega.hogwarts_artifacts_online.artifact.utility.Utility;
+import org.alpha.omega.hogwarts_artifacts_online.common.utility.Utility;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
