@@ -6,8 +6,12 @@ import org.alpha.omega.hogwarts_artifacts_online.common.exception.NotFoundExcept
 import org.alpha.omega.hogwarts_artifacts_online.entity.Wizard;
 import org.alpha.omega.hogwarts_artifacts_online.wizard.repository.WizardRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 @Service
+@Transactional
 @RequiredArgsConstructor
 public class WizardService {
 
@@ -17,5 +21,9 @@ public class WizardService {
         return this.repository.findById(wizardId)
                 .orElseThrow(() -> new NotFoundException(
                         String.format(Constant.CustomExMessage.Wizard.NOT_FOUND_WIZARD, wizardId)));
+    }
+
+    public List<Wizard> findAll() {
+        return this.repository.findAll();
     }
 }

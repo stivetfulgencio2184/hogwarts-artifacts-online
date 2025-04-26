@@ -28,4 +28,14 @@ public class WizardController {
                         .data(WizardMapper.INSTANCE.toWizardDTO(this.service.findById(id)))
                 .build());
     }
+
+    @GetMapping(path = "", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Result> findAllWizards() {
+        return ResponseEntity.ok(Result.builder()
+                        .flag(Boolean.TRUE)
+                        .code(HttpStatus.OK.value())
+                        .message("Find all success")
+                        .data(WizardMapper.INSTANCE.toWizardsDTOs(this.service.findAll()))
+                .build());
+    }
 }
