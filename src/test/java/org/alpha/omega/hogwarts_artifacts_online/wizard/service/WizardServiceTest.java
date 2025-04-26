@@ -2,14 +2,19 @@ package org.alpha.omega.hogwarts_artifacts_online.wizard.service;
 
 import org.alpha.omega.hogwarts_artifacts_online.common.constant.TestConstant;
 import org.alpha.omega.hogwarts_artifacts_online.common.exception.NotFoundException;
+import org.alpha.omega.hogwarts_artifacts_online.common.utility.Utility;
 import org.alpha.omega.hogwarts_artifacts_online.entity.Wizard;
 import org.alpha.omega.hogwarts_artifacts_online.wizard.repository.WizardRepository;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -28,6 +33,11 @@ class WizardServiceTest {
 
     @InjectMocks
     private WizardService service;
+
+    private List<Wizard> wizards = new ArrayList<>();
+
+    @BeforeEach
+    void setUp() { this.wizards = Utility.produceWizards(3); }
 
     @Test
     void testFoundById() {
@@ -57,5 +67,33 @@ class WizardServiceTest {
         // When and Then
         assertThrows(NotFoundException.class, () -> this.service.findById(TestConstant.WIZARD_ID));
         verify(this.repository, times(1)).findById(TestConstant.WIZARD_ID);
+    }
+
+    @Test
+    void testFindAll() {
+        // Given
+        given(this.repository.findAll()).willReturn(this.wizards);
+
+        // When
+        List<Wizard> wizardsList = this.service.findAll();
+
+        // Then
+        assertThat(wizardsList).isNotEmpty()
+                .hasSize(this.wizards.size())
+                .isEqualTo(this.wizards);
+        verify(this.repository, times(1)).findAll();
+    }
+
+    @Test
+    void testFindAllEmpty() {
+        // Given
+        given(this.repository.findAll()).willReturn(Collections.emptyList());
+
+        // When
+        List<Wizard> wizardsList = this.service.findAll();
+
+        // Then
+        assertThat(wizardsList).isNotNull().isEmpty();
+        verify(this.repository, times(1)).findAll();
     }
 }

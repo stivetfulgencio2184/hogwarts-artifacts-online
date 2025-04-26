@@ -5,6 +5,8 @@ import org.alpha.omega.hogwarts_artifacts_online.response.dto.WizardDTO;
 import org.mapstruct.Mapper;
 import org.mapstruct.factory.Mappers;
 
+import java.util.List;
+
 @Mapper
 public interface WizardMapper {
 
@@ -20,4 +22,6 @@ public interface WizardMapper {
                 .numberOfArtifacts(wizard.getNumberOfArtifacts())
                 .build();
     }
+
+    List<WizardDTO> toWizardsDTOs(List<Wizard> wizards);
 }

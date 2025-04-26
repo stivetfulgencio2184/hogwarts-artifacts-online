@@ -3,8 +3,10 @@ package org.alpha.omega.hogwarts_artifacts_online.wizard.controller;
 import org.alpha.omega.hogwarts_artifacts_online.common.Constant;
 import org.alpha.omega.hogwarts_artifacts_online.common.constant.TestConstant;
 import org.alpha.omega.hogwarts_artifacts_online.common.exception.NotFoundException;
+import org.alpha.omega.hogwarts_artifacts_online.common.utility.Utility;
 import org.alpha.omega.hogwarts_artifacts_online.entity.Wizard;
 import org.alpha.omega.hogwarts_artifacts_online.wizard.service.WizardService;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -12,6 +14,10 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -27,6 +33,11 @@ class WizardControllerTest {
 
     @MockitoBean
     private WizardService service;
+
+    List<Wizard> wizards = new ArrayList<>();
+
+    @BeforeEach
+    void setUp() { this.wizards = Utility.produceWizards(3); }
 
     @Test
     void testFindWizardById() throws Exception {
@@ -62,5 +73,37 @@ class WizardControllerTest {
                 .andExpect(jsonPath("$.code").value(HttpStatus.NOT_FOUND.value()))
                 .andExpect(jsonPath("$.message").value(String.format(
                         Constant.CustomExMessage.Wizard.NOT_FOUND_WIZARD, TestConstant.WIZARD_ID)));
+    }
+
+    @Test
+    void testFindAllWizards() throws Exception {
+        // Given
+        given(this.service.findAll()).willReturn(this.wizards);
+
+        // When and Then
+        this.mockMvc.perform(get("/api/v1/wizards"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.flag").value(Boolean.TRUE))
+                .andExpect(jsonPath("$.code").value(HttpStatus.OK.value()))
+                .andExpect(jsonPath("$.message").value("Find all success"))
+                .andExpect(jsonPath("$.data").isArray())
+                .andExpect(jsonPath("$.data").isNotEmpty())
+                .andExpect(jsonPath("$.data[0].id").value(TestConstant.WIZARD_ID))
+                .andExpect(jsonPath("$.data[0].numberOfArtifacts").value(1));
+    }
+
+    @Test
+    void testFindAllWizardsEmpty() throws Exception {
+        // Given
+        given(this.service.findAll()).willReturn(Collections.emptyList());
+
+        // When and Then
+        this.mockMvc.perform(get("/api/v1/wizards"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.flag").value(Boolean.TRUE))
+                .andExpect(jsonPath("$.code").value(HttpStatus.OK.value()))
+                .andExpect(jsonPath("$.message").value("Find all success"))
+                .andExpect(jsonPath("$.data").isArray())
+                .andExpect(jsonPath("$.data").isEmpty());
     }
 }
