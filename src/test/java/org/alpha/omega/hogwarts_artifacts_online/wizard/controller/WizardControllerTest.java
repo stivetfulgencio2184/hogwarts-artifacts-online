@@ -1,17 +1,21 @@
 package org.alpha.omega.hogwarts_artifacts_online.wizard.controller;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.alpha.omega.hogwarts_artifacts_online.common.Constant;
 import org.alpha.omega.hogwarts_artifacts_online.common.constant.TestConstant;
 import org.alpha.omega.hogwarts_artifacts_online.common.exception.NotFoundException;
 import org.alpha.omega.hogwarts_artifacts_online.common.utility.Utility;
 import org.alpha.omega.hogwarts_artifacts_online.entity.Wizard;
+import org.alpha.omega.hogwarts_artifacts_online.wizard.request.WizardRequest;
 import org.alpha.omega.hogwarts_artifacts_online.wizard.service.WizardService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -33,6 +37,9 @@ class WizardControllerTest {
 
     @MockitoBean
     private WizardService service;
+
+    @Autowired
+    ObjectMapper mapper;
 
     List<Wizard> wizards = new ArrayList<>();
 
@@ -105,5 +112,51 @@ class WizardControllerTest {
                 .andExpect(jsonPath("$.message").value("Find all success"))
                 .andExpect(jsonPath("$.data").isArray())
                 .andExpect(jsonPath("$.data").isEmpty());
+    }
+
+    @Test
+    void testCreateNewWizard() throws Exception {
+        // Given
+        WizardRequest request = WizardRequest.builder()
+                .name("Name of new Wizard.")
+                .build();
+        String json = this.mapper.writeValueAsString(request);
+        Wizard createdWizard = Wizard.builder()
+                .id(TestConstant.WIZARD_ID)
+                .name("Name of new Wizard.")
+                .build();
+        given(this.service.createWizard(Mockito.any(Wizard.class))).willReturn(createdWizard);
+
+        // When and Then
+        this.mockMvc.perform(post("/api/v1/wizards")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(json)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.flag").value(Boolean.TRUE))
+                .andExpect(jsonPath("$.code").value(HttpStatus.CREATED.value()))
+                .andExpect(jsonPath("$.message").value("New wizard created successfully."))
+                .andExpect(jsonPath("$.data.id").value(createdWizard.getId()))
+                .andExpect(jsonPath("$.data.name").value(createdWizard.getName()))
+                .andExpect(jsonPath("$.data.numberOfArtifacts").value(0));
+    }
+
+    @Test
+    void testCreateWizardBadRequest() throws Exception {
+        // Given
+        WizardRequest request = WizardRequest.builder().build();
+        String json = this.mapper.writeValueAsString(request);
+
+        // When and Then
+        this.mockMvc.perform(post("/api/v1/wizards")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(json)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.flag").value(Boolean.FALSE))
+                .andExpect(jsonPath("$.code").value(HttpStatus.BAD_REQUEST.value()))
+                .andExpect(jsonPath("$.message").value(TestConstant.Exception.INVALID_ARGUMENTS))
+                .andExpect(jsonPath("$.data").isNotEmpty())
+                .andExpect(jsonPath("$.data").isArray());
     }
 }
