@@ -2,6 +2,7 @@ package org.alpha.omega.hogwarts_artifacts_online.wizard.mapper;
 
 import org.alpha.omega.hogwarts_artifacts_online.entity.Wizard;
 import org.alpha.omega.hogwarts_artifacts_online.response.dto.WizardDTO;
+import org.alpha.omega.hogwarts_artifacts_online.wizard.request.WizardRequest;
 import org.mapstruct.Mapper;
 import org.mapstruct.factory.Mappers;
 
@@ -24,4 +25,6 @@ public interface WizardMapper {
     }
 
     List<WizardDTO> toWizardsDTOs(List<Wizard> wizards);
+
+    Wizard toWizard(WizardRequest request);
 }

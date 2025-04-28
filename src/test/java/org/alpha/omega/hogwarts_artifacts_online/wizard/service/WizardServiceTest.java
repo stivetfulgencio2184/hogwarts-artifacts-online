@@ -96,4 +96,26 @@ class WizardServiceTest {
         assertThat(wizardsList).isNotNull().isEmpty();
         verify(this.repository, times(1)).findAll();
     }
+
+    @Test
+    void testCreateWizard() {
+        // Given
+        Wizard newWizard = Wizard.builder()
+                .name("New Wizard to save.")
+                .build();
+        Wizard savedWizard = Wizard.builder()
+                .id(TestConstant.WIZARD_ID)
+                .name("New Wizard to save.")
+                .build();
+        given(this.repository.save(newWizard)).willReturn(savedWizard);
+
+        // When
+        Wizard wizard = this.service.createWizard(newWizard);
+
+        // Then
+        assertThat(wizard).isNotNull();
+        assertThat(wizard.getId()).isEqualTo(savedWizard.getId());
+        assertThat(wizard.getName()).isEqualTo(savedWizard.getName());
+        verify(this.repository, times(1)).save(newWizard);
+    }
 }

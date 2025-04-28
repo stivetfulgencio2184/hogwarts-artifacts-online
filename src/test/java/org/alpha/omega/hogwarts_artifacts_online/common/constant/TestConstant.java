@@ -12,11 +12,12 @@ public class TestConstant {
 
         private Exception() {}
 
+        public static final Object INVALID_ARGUMENTS = "Provided arguments are invalid, see data for details.";
+
         public static class Artifact {
 
             private Artifact() {}
 
-            public static final Object INVALID_ARGUMENTS = "Provided arguments are invalid, see data for details.";
             public static final String NOT_FOUNT_ARTIFACT = "Could not find artifact with Id: %s";
         }
     }

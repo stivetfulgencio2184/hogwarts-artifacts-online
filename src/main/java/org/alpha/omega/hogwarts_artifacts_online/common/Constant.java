@@ -8,11 +8,12 @@ public class Constant {
 
         private CustomExMessage() {}
 
+        public static final String INVALID_ARGUMENTS = "Provided arguments are invalid, see data for details.";
+
         public static class Artifact {
 
             private Artifact() {}
 
-            public static final String INVALID_ARGUMENTS = "Provided arguments are invalid, see data for details.";
             public static final String NOT_FOUNT_ARTIFACT = "Could not find artifact with Id: %s";
         }
 
