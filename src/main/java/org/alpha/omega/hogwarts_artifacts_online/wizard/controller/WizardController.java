@@ -2,6 +2,7 @@ package org.alpha.omega.hogwarts_artifacts_online.wizard.controller;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.alpha.omega.hogwarts_artifacts_online.entity.Wizard;
 import org.alpha.omega.hogwarts_artifacts_online.response.Result;
 import org.alpha.omega.hogwarts_artifacts_online.wizard.mapper.WizardMapper;
 import org.alpha.omega.hogwarts_artifacts_online.wizard.request.WizardRequest;
@@ -50,5 +51,17 @@ public class WizardController {
                                 this.service.createWizard(
                                         WizardMapper.INSTANCE.toWizard(request))))
                         .build());
+    }
+
+    @PutMapping(path = "/{wizardId}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Result> updateWizardById(@RequestBody @Valid WizardRequest request, @PathVariable(name = "wizardId") Long id) {
+        Wizard updateWizard = WizardMapper.INSTANCE.toWizard(request);
+        updateWizard.setId(id);
+        return ResponseEntity.ok(Result.builder()
+                        .flag(Boolean.TRUE)
+                        .code(HttpStatus.OK.value())
+                        .message("Wizard updated successfully.")
+                        .data(WizardMapper.INSTANCE.toWizardDTO(this.service.updateWizard(updateWizard)))
+                .build());
     }
 }

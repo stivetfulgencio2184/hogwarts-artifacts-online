@@ -159,4 +159,50 @@ class WizardControllerTest {
                 .andExpect(jsonPath("$.data").isNotEmpty())
                 .andExpect(jsonPath("$.data").isArray());
     }
+
+    @Test
+    void testUpdateWizardById() throws Exception {
+        // Given
+        WizardRequest request = WizardRequest.builder()
+                .name("New name for Wizard.")
+                .build();
+        String json = this.mapper.writeValueAsString(request);
+        Wizard updatedWizard = Wizard.builder()
+                .id(TestConstant.WIZARD_ID)
+                .name(request.name())
+                .build();
+        given(this.service.updateWizard(updatedWizard)).willReturn(updatedWizard);
+
+        // When and Then
+        this.mockMvc.perform(put("/api/v1/wizards/{wizardId}", TestConstant.WIZARD_ID)
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content(json)
+                            .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.flag").value(Boolean.TRUE))
+                .andExpect(jsonPath("$.code").value(HttpStatus.OK.value()))
+                .andExpect(jsonPath("$.message").value("Wizard updated successfully."))
+                .andExpect(jsonPath("$.data.id").value(TestConstant.WIZARD_ID))
+                .andExpect(jsonPath("$.data.name").value(updatedWizard.getName()));
+    }
+
+    @Test
+    void testUpdateWizardByIdBadRequest() throws Exception {
+        // Given
+        WizardRequest request = WizardRequest.builder()
+                .build();
+        String json = this.mapper.writeValueAsString(request);
+
+        // When and Then
+        this.mockMvc.perform(put("/api/v1/wizards/{wizardId}", TestConstant.WIZARD_ID)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(json)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.flag").value(Boolean.FALSE))
+                .andExpect(jsonPath("$.code").value(HttpStatus.BAD_REQUEST.value()))
+                .andExpect(jsonPath("$.message").value(TestConstant.Exception.INVALID_ARGUMENTS))
+                .andExpect(jsonPath("$.data").isNotEmpty())
+                .andExpect(jsonPath("$.data").isArray());
+    }
 }
