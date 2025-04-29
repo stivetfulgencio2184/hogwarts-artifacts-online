@@ -30,4 +30,14 @@ public class WizardService {
     public Wizard createWizard(Wizard newWizard) {
         return this.repository.save(newWizard);
     }
+
+    public Wizard updateWizard(Wizard updatedWizard) {
+        Long wizardId = updatedWizard.getId();
+        return this.repository.findById(wizardId)
+                    .map(wizardToUpdate -> {
+                            wizardToUpdate.setName(updatedWizard.getName());
+                            return this.repository.save(wizardToUpdate);
+                        }).orElseThrow(() -> new NotFoundException(
+                            String.format(Constant.CustomExMessage.Wizard.NOT_FOUND_WIZARD, wizardId)));
+    }
 }

@@ -118,4 +118,42 @@ class WizardServiceTest {
         assertThat(wizard.getName()).isEqualTo(savedWizard.getName());
         verify(this.repository, times(1)).save(newWizard);
     }
+
+    @Test
+    void testUpdateWizardNotFound() {
+        // Given
+        Wizard updatedWizard = Wizard.builder()
+                .id(TestConstant.WIZARD_ID)
+                .name("New name for Wizard.")
+                .build();
+        given(this.repository.findById(TestConstant.WIZARD_ID)).willReturn(Optional.empty());
+
+        // When and Then
+        assertThrows(NotFoundException.class, () -> this.service.updateWizard(updatedWizard));
+        verify(this.repository, times(1)).findById(TestConstant.WIZARD_ID);
+    }
+
+    @Test
+    void testUpdateWizard() {
+        // Given
+        Wizard wizardToUpdate = Wizard.builder()
+                .id(TestConstant.WIZARD_ID)
+                .name("Wizard name.")
+                .build();
+        Wizard updatedWizard = Wizard.builder()
+                .id(TestConstant.WIZARD_ID)
+                .name("New name for Wizard.")
+                .build();
+        given(this.repository.findById(TestConstant.WIZARD_ID)).willReturn(Optional.of(wizardToUpdate));
+        given(this.repository.save(wizardToUpdate)).willReturn(wizardToUpdate);
+
+        // When
+        Wizard wizard = this.service.updateWizard(updatedWizard);
+
+        // Then
+        assertThat(wizard).isNotNull();
+        assertThat(wizard.getName()).isEqualTo(updatedWizard.getName());
+        verify(this.repository, times(1)).findById(TestConstant.WIZARD_ID);
+        verify(this.repository, times(1)).save(wizardToUpdate);
+    }
 }

@@ -20,5 +20,12 @@ public class TestConstant {
 
             public static final String NOT_FOUNT_ARTIFACT = "Could not find artifact with Id: %s";
         }
+
+        public static class Wizard {
+
+            private Wizard() {}
+
+            public static final String NOT_FOUND_WIZARD = "Could not find wizard with Id: %s";
+        }
     }
 }
