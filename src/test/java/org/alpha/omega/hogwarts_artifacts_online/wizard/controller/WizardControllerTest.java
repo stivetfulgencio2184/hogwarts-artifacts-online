@@ -24,6 +24,8 @@ import java.util.Collections;
 import java.util.List;
 
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.doThrow;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -204,5 +206,36 @@ class WizardControllerTest {
                 .andExpect(jsonPath("$.message").value(TestConstant.Exception.INVALID_ARGUMENTS))
                 .andExpect(jsonPath("$.data").isNotEmpty())
                 .andExpect(jsonPath("$.data").isArray());
+    }
+
+    @Test
+    void testDeleteWizardById() throws Exception {
+        // Given
+        doNothing().when(this.service).deleteWizard(TestConstant.WIZARD_ID);
+
+        // When and Then
+        this.mockMvc.perform(delete("/api/v1/wizards/{wizardId}", TestConstant.WIZARD_ID))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.flag").value(Boolean.TRUE))
+                .andExpect(jsonPath("$.code").value(HttpStatus.OK.value()))
+                .andExpect(jsonPath("$.message").value("Wizard delete successfully."))
+                .andExpect(jsonPath("$.data").isEmpty());
+    }
+
+    @Test
+    void testDeleteWizardByIdNotFound() throws Exception {
+        // Given
+        doThrow(new NotFoundException(
+                String.format(TestConstant.Exception.Wizard.NOT_FOUND_WIZARD, TestConstant.WIZARD_ID)))
+                .when(this.service).deleteWizard(TestConstant.WIZARD_ID);
+
+        // When and Then
+        this.mockMvc.perform(delete("/api/v1/wizards/{wizardId}", TestConstant.WIZARD_ID))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.flag").value(Boolean.FALSE))
+                .andExpect(jsonPath("$.code").value(HttpStatus.NOT_FOUND.value()))
+                .andExpect(jsonPath("$.message").value(
+                        String.format(TestConstant.Exception.Wizard.NOT_FOUND_WIZARD, TestConstant.WIZARD_ID)))
+                .andExpect(jsonPath("$.data").isEmpty());
     }
 }

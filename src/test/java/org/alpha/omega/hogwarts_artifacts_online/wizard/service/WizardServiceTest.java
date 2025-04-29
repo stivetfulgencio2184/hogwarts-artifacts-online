@@ -20,7 +20,7 @@ import java.util.Optional;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.*;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
@@ -155,5 +155,35 @@ class WizardServiceTest {
         assertThat(wizard.getName()).isEqualTo(updatedWizard.getName());
         verify(this.repository, times(1)).findById(TestConstant.WIZARD_ID);
         verify(this.repository, times(1)).save(wizardToUpdate);
+    }
+
+    @Test
+    void testDeleteWizardNotFound() {
+        // Given
+        given(this.repository.findById(TestConstant.WIZARD_ID)).willReturn(Optional.empty());
+
+        // When
+        assertThrows(NotFoundException.class, () -> this.service.deleteWizard(TestConstant.WIZARD_ID));
+
+        // Then
+        verify(this.repository, times(1)).findById(TestConstant.WIZARD_ID);
+    }
+
+    @Test
+    void testDeleteWizard() {
+        // Given
+        Wizard wizardToDelete = Wizard.builder()
+                .id(TestConstant.WIZARD_ID)
+                .name("Wizard name.")
+                .build();
+        given(this.repository.findById(TestConstant.WIZARD_ID)).willReturn(Optional.of(wizardToDelete));
+        doNothing().when(this.repository).delete(wizardToDelete);
+
+        // When
+        this.service.deleteWizard(TestConstant.WIZARD_ID);
+
+        // Then
+        verify(this.repository, times(1)).findById(TestConstant.WIZARD_ID);
+        verify(this.repository, times(1)).delete(wizardToDelete);
     }
 }
