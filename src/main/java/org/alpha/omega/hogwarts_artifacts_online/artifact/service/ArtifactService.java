@@ -23,7 +23,7 @@ public class ArtifactService {
     public Artifact findById(String id) {
         return this.repository.findById(id)
                 .orElseThrow(() -> new NotFoundException(
-                        String.format(Constant.CustomExMessage.Artifact.NOT_FOUNT_ARTIFACT, id)));
+                        String.format(Constant.CustomExMessage.NOT_FOUND_OBJECT, Constant.ARTIFACT, id)));
     }
 
     public List<Artifact> findAll() {
@@ -45,13 +45,13 @@ public class ArtifactService {
                     return this.repository.save(artifactToUpdate);
                 }).orElseThrow(() ->
                     new NotFoundException(
-                            String.format(Constant.CustomExMessage.Artifact.NOT_FOUNT_ARTIFACT, artifactId)));
+                            String.format(Constant.CustomExMessage.NOT_FOUND_OBJECT, Constant.ARTIFACT, artifactId)));
     }
 
     public void delete(String artifactId) {
         Artifact artifactToDelete = this.repository.findById(artifactId)
                 .orElseThrow(() -> new NotFoundException(
-                        String.format(Constant.CustomExMessage.Artifact.NOT_FOUNT_ARTIFACT, artifactId)));
+                        String.format(Constant.CustomExMessage.NOT_FOUND_OBJECT, Constant.ARTIFACT, artifactId)));
         this.repository.delete(artifactToDelete);
     }
 }

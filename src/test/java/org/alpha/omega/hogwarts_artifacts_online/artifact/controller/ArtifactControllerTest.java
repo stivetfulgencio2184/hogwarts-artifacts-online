@@ -14,6 +14,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
@@ -40,6 +41,9 @@ class ArtifactControllerTest {
     @MockitoBean
     ArtifactService service;
 
+    @Value(value = "${api.endpoint.base-url.v1}")
+    private String baseUrl;
+
     @Autowired
     ObjectMapper objectMapper;
 
@@ -62,11 +66,12 @@ class ArtifactControllerTest {
             given(this.service.findById("1")).willReturn(foundArtifact);
 
         // When and Then
-            this.mvc.perform(get("/api/v1/artifacts/1").accept(MediaType.APPLICATION_JSON))
+            this.mvc.perform(get(this.baseUrl + "/artifacts/{artifactId}", "1")
+                            .accept(MediaType.APPLICATION_JSON))
                     .andExpect(jsonPath("$.flag").value(Boolean.TRUE))
                     .andExpect(jsonPath("$.code").value(HttpStatus.OK.value()))
                     .andExpect(jsonPath("$.message").value("Find One Success"))
-                    .andExpect(jsonPath("$.data.id").value(1))
+                    .andExpect(jsonPath("$.data.id").value("1"))
                     .andExpect(jsonPath("$.data.name").value("This is name of the artifact: 1"))
                     .andExpect(jsonPath("$.data.description").value("This is a description of the artifact: 1"))
                     .andExpect(jsonPath("$.data.imageUrl").value("ImageUrl-1"));
@@ -77,14 +82,15 @@ class ArtifactControllerTest {
         // Given.
         given(this.service.findById(Mockito.anyString()))
                 .willThrow(new NotFoundException(String
-                        .format(TestConstant.Exception.Artifact.NOT_FOUNT_ARTIFACT, TestConstant.ARTIFACT_ID)));
+                        .format(TestConstant.Exception.NOT_FOUND_OBJECT, TestConstant.ARTIFACT, TestConstant.ARTIFACT_ID)));
 
         // When and Then
-        this.mvc.perform(get("/api/v1/artifacts/10435344876").accept(MediaType.APPLICATION_JSON))
+        this.mvc.perform(get(this.baseUrl + "/artifacts/{artifactId}", TestConstant.ARTIFACT_ID)
+                        .accept(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.flag").value(Boolean.FALSE))
                 .andExpect(jsonPath("$.code").value(HttpStatus.NOT_FOUND.value()))
                 .andExpect(jsonPath("$.message").value(String
-                        .format(TestConstant.Exception.Artifact.NOT_FOUNT_ARTIFACT, TestConstant.ARTIFACT_ID)))
+                        .format(TestConstant.Exception.NOT_FOUND_OBJECT, TestConstant.ARTIFACT, TestConstant.ARTIFACT_ID)))
                 .andExpect(jsonPath("$.data").isEmpty());
     }
 
@@ -94,7 +100,8 @@ class ArtifactControllerTest {
         given(this.service.findAll()).willReturn(this.artifacts);
 
         // When and Then
-        this.mvc.perform(get("/api/v1/artifacts").accept(MediaType.APPLICATION_JSON))
+        this.mvc.perform(get(this.baseUrl + "/artifacts")
+                        .accept(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.flag").value(Boolean.TRUE))
                 .andExpect(jsonPath("$.code").value(HttpStatus.OK.value()))
                 .andExpect(jsonPath("$.message").value("Find One Success"))
@@ -121,7 +128,7 @@ class ArtifactControllerTest {
         given(this.service.saveArtifact(Mockito.any(Artifact.class))).willReturn(savedArtifact);
 
         // When and Then
-        this.mvc.perform(post("/api/v1/artifacts")
+        this.mvc.perform(post(this.baseUrl + "/artifacts")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(json)
                 .accept(MediaType.APPLICATION_JSON))
@@ -146,7 +153,7 @@ class ArtifactControllerTest {
         String json = this.objectMapper.writeValueAsString(request);
 
         // When and Then
-        this.mvc.perform(post("/api/v1/artifacts")
+        this.mvc.perform(post(this.baseUrl + "/artifacts")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(json)
                         .accept(MediaType.APPLICATION_JSON))
@@ -173,7 +180,7 @@ class ArtifactControllerTest {
         given(this.service.update(Mockito.any(Artifact.class))).willReturn(artifactUpdated);
 
         // When and Then
-        this.mvc.perform(put("/api/v1/artifacts/{artifactId}", TestConstant.ARTIFACT_ID)
+        this.mvc.perform(put(this.baseUrl + "/artifacts/{artifactId}", TestConstant.ARTIFACT_ID)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(json)
                         .accept(MediaType.APPLICATION_JSON))
@@ -199,7 +206,7 @@ class ArtifactControllerTest {
         String json = this.objectMapper.writeValueAsString(request);
 
         // When and Then
-        this.mvc.perform(put("/api/v1/artifacts/{artifactId}", TestConstant.ARTIFACT_ID)
+        this.mvc.perform(put(this.baseUrl + "/artifacts/{artifactId}", TestConstant.ARTIFACT_ID)
                     .contentType(MediaType.APPLICATION_JSON)
                     .content(json)
                     .accept(MediaType.APPLICATION_JSON))
@@ -219,7 +226,7 @@ class ArtifactControllerTest {
         willDoNothing().given(this.service).delete(TestConstant.ARTIFACT_ID);
 
         // When and Then
-        this.mvc.perform(delete("/api/v1/artifacts/{artifactId}", TestConstant.ARTIFACT_ID))
+        this.mvc.perform(delete(this.baseUrl + "/artifacts/{artifactId}", TestConstant.ARTIFACT_ID))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.flag").value(Boolean.TRUE))
                 .andExpect(jsonPath("$.code").value(HttpStatus.OK.value()))
@@ -232,16 +239,16 @@ class ArtifactControllerTest {
     void testDeleteArtifactErrorWithNonExistentId() throws Exception {
         // Given
         doThrow(new NotFoundException(String.format(
-                TestConstant.Exception.Artifact.NOT_FOUNT_ARTIFACT, TestConstant.ARTIFACT_ID)))
+                TestConstant.Exception.NOT_FOUND_OBJECT, TestConstant.ARTIFACT, TestConstant.ARTIFACT_ID)))
                 .when(this.service).delete(TestConstant.ARTIFACT_ID);
 
         // When and Then
-        this.mvc.perform(delete("/api/v1/artifacts/{artifactId}", TestConstant.ARTIFACT_ID))
+        this.mvc.perform(delete(this.baseUrl + "/artifacts/{artifactId}", TestConstant.ARTIFACT_ID))
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.flag").value(Boolean.FALSE))
                 .andExpect(jsonPath("$.code").value(HttpStatus.NOT_FOUND.value()))
                 .andExpect(jsonPath("$.message").value(String.format(
-                        TestConstant.Exception.Artifact.NOT_FOUNT_ARTIFACT, TestConstant.ARTIFACT_ID)))
+                        TestConstant.Exception.NOT_FOUND_OBJECT, TestConstant.ARTIFACT, TestConstant.ARTIFACT_ID)))
                 .andExpect(jsonPath("$.data").isEmpty());
     }
 }
