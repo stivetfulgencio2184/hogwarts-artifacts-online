@@ -40,4 +40,11 @@ public class WizardService {
                         }).orElseThrow(() -> new NotFoundException(
                             String.format(Constant.CustomExMessage.Wizard.NOT_FOUND_WIZARD, wizardId)));
     }
+
+    public void deleteWizard(Long id) {
+        Wizard wizardToDelete = this.repository.findById(id)
+                .orElseThrow(() -> new NotFoundException(
+                        String.format(Constant.CustomExMessage.Wizard.NOT_FOUND_WIZARD, id)));
+        this.repository.delete(wizardToDelete);
+    }
 }

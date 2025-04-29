@@ -64,4 +64,14 @@ public class WizardController {
                         .data(WizardMapper.INSTANCE.toWizardDTO(this.service.updateWizard(updateWizard)))
                 .build());
     }
+
+    @DeleteMapping(path = "/{wizardId}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Result> deleteWizardById(@PathVariable(name = "wizardId") Long id) {
+        this.service.deleteWizard(id);
+        return ResponseEntity.ok(Result.builder()
+                        .flag(Boolean.TRUE)
+                        .code(HttpStatus.OK.value())
+                        .message("Wizard delete successfully.")
+                .build());
+    }
 }
