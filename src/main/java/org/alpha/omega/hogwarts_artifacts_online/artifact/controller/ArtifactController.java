@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping(path = "/api/v1/artifacts")
+@RequestMapping(path = "${api.endpoint.base-url.v1}/artifacts")
 @RequiredArgsConstructor
 public class ArtifactController {
 

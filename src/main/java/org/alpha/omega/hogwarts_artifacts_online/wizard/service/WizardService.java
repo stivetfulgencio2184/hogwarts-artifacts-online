@@ -20,7 +20,7 @@ public class WizardService {
     public Wizard findById(Long wizardId) {
         return this.repository.findById(wizardId)
                 .orElseThrow(() -> new NotFoundException(
-                        String.format(Constant.CustomExMessage.Wizard.NOT_FOUND_WIZARD, wizardId)));
+                        String.format(Constant.CustomExMessage.NOT_FOUND_OBJECT, Constant.WIZARD, wizardId)));
     }
 
     public List<Wizard> findAll() {
@@ -38,13 +38,14 @@ public class WizardService {
                             wizardToUpdate.setName(updatedWizard.getName());
                             return this.repository.save(wizardToUpdate);
                         }).orElseThrow(() -> new NotFoundException(
-                            String.format(Constant.CustomExMessage.Wizard.NOT_FOUND_WIZARD, wizardId)));
+                            String.format(Constant.CustomExMessage.NOT_FOUND_OBJECT, Constant.WIZARD, wizardId)));
     }
 
     public void deleteWizard(Long id) {
         Wizard wizardToDelete = this.repository.findById(id)
                 .orElseThrow(() -> new NotFoundException(
-                        String.format(Constant.CustomExMessage.Wizard.NOT_FOUND_WIZARD, id)));
+                        String.format(Constant.CustomExMessage.NOT_FOUND_OBJECT, Constant.WIZARD, id)));
+        wizardToDelete.disassociateArtifactsRelated();
         this.repository.delete(wizardToDelete);
     }
 }

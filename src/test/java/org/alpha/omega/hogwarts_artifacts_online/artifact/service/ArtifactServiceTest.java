@@ -93,7 +93,7 @@ class ArtifactServiceTest {
 
         // Then.
         assertThat(thrown).isInstanceOf(NotFoundException.class)
-                .hasMessage(String.format(TestConstant.Exception.Artifact.NOT_FOUNT_ARTIFACT, TestConstant.ARTIFACT_ID));
+                .hasMessage(String.format(TestConstant.Exception.NOT_FOUND_OBJECT, TestConstant.ARTIFACT, TestConstant.ARTIFACT_ID));
         verify(this.repository, times(1)).findById(TestConstant.ARTIFACT_ID);
     }
 
@@ -167,7 +167,7 @@ class ArtifactServiceTest {
 
         // Then
         assertThat(thrown).isInstanceOf(NotFoundException.class)
-                .hasMessage(String.format(TestConstant.Exception.Artifact.NOT_FOUNT_ARTIFACT, TestConstant.ARTIFACT_ID));
+                .hasMessage(String.format(TestConstant.Exception.NOT_FOUND_OBJECT, TestConstant.ARTIFACT, TestConstant.ARTIFACT_ID));
         verify(this.repository, times(1)).findById(TestConstant.ARTIFACT_ID);
     }
 

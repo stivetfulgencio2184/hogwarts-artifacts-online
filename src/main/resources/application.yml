@@ -8,3 +8,7 @@ spring:
     driver-class-name: org.h2.Driver
   jpa:
     show-sql: true
+api:
+  endpoint:
+    base-url:
+      v1: /api/v1

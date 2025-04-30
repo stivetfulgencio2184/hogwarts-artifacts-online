@@ -24,7 +24,7 @@ public class Wizard  implements Serializable {
     @Column(name = "name", nullable = false, length = 80)
     private String name;
 
-    @OneToMany(mappedBy = "wizard", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
+    @OneToMany(mappedBy = "wizard", cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     private Set<Artifact> artifacts = new HashSet<>();
 
 
@@ -36,6 +36,11 @@ public class Wizard  implements Serializable {
     public void removeArtifact(Artifact artifact) {
         this.artifacts.remove(artifact);
         artifact.setWizard(null);
+    }
+
+    public void disassociateArtifactsRelated() {
+        if (this.artifacts != null)
+            this.artifacts.forEach(artifact -> artifact.setWizard(null));
     }
 
     public Integer getNumberOfArtifacts() {

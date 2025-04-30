@@ -13,7 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping(path = "/api/v1/wizards")
+@RequestMapping(path = "${api.endpoint.base-url.v1}/wizards")
 @RequiredArgsConstructor
 public class WizardController {
 
