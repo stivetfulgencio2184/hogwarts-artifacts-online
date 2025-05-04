@@ -1,7 +1,6 @@
 package org.alpha.omega.hogwarts_artifacts_online.wizard.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.alpha.omega.hogwarts_artifacts_online.common.Constant;
 import org.alpha.omega.hogwarts_artifacts_online.common.constant.TestConstant;
 import org.alpha.omega.hogwarts_artifacts_online.common.exception.NotFoundException;
 import org.alpha.omega.hogwarts_artifacts_online.common.utility.Utility;
@@ -240,6 +239,57 @@ class WizardControllerTest {
                 .andExpect(jsonPath("$.code").value(HttpStatus.NOT_FOUND.value()))
                 .andExpect(jsonPath("$.message").value(
                         String.format(TestConstant.Exception.NOT_FOUND_OBJECT, TestConstant.WIZARD, TestConstant.WIZARD_ID)))
+                .andExpect(jsonPath("$.data").isEmpty());
+    }
+
+    @Test
+    void testAssignArtifactToWizard() throws Exception {
+        // Given
+        doNothing().when(this.service).assignArtifact(TestConstant.WIZARD_ID, TestConstant.ARTIFACT_ID);
+
+        // When and Then
+        this.mockMvc.perform(patch(this.baseUrl + "/wizards/{wizardId}/artifacts/{artifactId}",
+                        TestConstant.WIZARD_ID, TestConstant.ARTIFACT_ID))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.flag").value(Boolean.TRUE))
+                .andExpect(jsonPath("$.code").value(HttpStatus.OK.value()))
+                .andExpect(jsonPath("$.message").value("Artifact Assignment Success"))
+                .andExpect(jsonPath("$.data").isEmpty());
+    }
+
+    @Test
+    void testAssignArtifactToWizardNotFoundArtifact() throws Exception {
+        // Given
+        doThrow(new NotFoundException(String.format(
+                TestConstant.Exception.NOT_FOUND_OBJECT, TestConstant.ARTIFACT, TestConstant.ARTIFACT_ID)))
+                .when(this.service).assignArtifact(TestConstant.WIZARD_ID, TestConstant.ARTIFACT_ID);
+
+        // When and Then
+        this.mockMvc.perform(patch(this.baseUrl + "/wizards/{wizardId}/artifacts/{artifactId}",
+                    TestConstant.WIZARD_ID, TestConstant.ARTIFACT_ID))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.flag").value(Boolean.FALSE))
+                .andExpect(jsonPath("$.code").value(HttpStatus.NOT_FOUND.value()))
+                .andExpect(jsonPath("$.message").value(String.format(
+                        TestConstant.Exception.NOT_FOUND_OBJECT, TestConstant.ARTIFACT, TestConstant.ARTIFACT_ID)))
+                .andExpect(jsonPath("$.data").isEmpty());
+    }
+
+    @Test
+    void testAssignArtifactToWizardNotFoundWizard() throws Exception {
+        // Given
+        doThrow(new NotFoundException(String.format(
+                TestConstant.Exception.NOT_FOUND_OBJECT, TestConstant.WIZARD, TestConstant.WIZARD_ID)))
+                .when(this.service).assignArtifact(TestConstant.WIZARD_ID, TestConstant.ARTIFACT_ID);
+
+        // When and Then
+        this.mockMvc.perform(patch(this.baseUrl + "/wizards/{wizardId}/artifacts/{artifactId}",
+                        TestConstant.WIZARD_ID, TestConstant.ARTIFACT_ID))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.flag").value(Boolean.FALSE))
+                .andExpect(jsonPath("$.code").value(HttpStatus.NOT_FOUND.value()))
+                .andExpect(jsonPath("$.message").value(String.format(
+                        TestConstant.Exception.NOT_FOUND_OBJECT, TestConstant.WIZARD, TestConstant.WIZARD_ID)))
                 .andExpect(jsonPath("$.data").isEmpty());
     }
 }

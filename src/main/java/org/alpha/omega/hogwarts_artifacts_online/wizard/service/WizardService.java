@@ -1,8 +1,10 @@
 package org.alpha.omega.hogwarts_artifacts_online.wizard.service;
 
 import lombok.RequiredArgsConstructor;
+import org.alpha.omega.hogwarts_artifacts_online.artifact.repository.ArtifactRepository;
 import org.alpha.omega.hogwarts_artifacts_online.common.Constant;
 import org.alpha.omega.hogwarts_artifacts_online.common.exception.NotFoundException;
+import org.alpha.omega.hogwarts_artifacts_online.entity.Artifact;
 import org.alpha.omega.hogwarts_artifacts_online.entity.Wizard;
 import org.alpha.omega.hogwarts_artifacts_online.wizard.repository.WizardRepository;
 import org.springframework.stereotype.Service;
@@ -15,37 +17,56 @@ import java.util.List;
 @RequiredArgsConstructor
 public class WizardService {
 
-    private final WizardRepository repository;
+    private final WizardRepository wizardRepository;
+
+    private final ArtifactRepository artifactRepository;
 
     public Wizard findById(Long wizardId) {
-        return this.repository.findById(wizardId)
+        return this.wizardRepository.findById(wizardId)
                 .orElseThrow(() -> new NotFoundException(
                         String.format(Constant.CustomExMessage.NOT_FOUND_OBJECT, Constant.WIZARD, wizardId)));
     }
 
     public List<Wizard> findAll() {
-        return this.repository.findAll();
+        return this.wizardRepository.findAll();
     }
 
     public Wizard createWizard(Wizard newWizard) {
-        return this.repository.save(newWizard);
+        return this.wizardRepository.save(newWizard);
     }
 
     public Wizard updateWizard(Wizard updatedWizard) {
         Long wizardId = updatedWizard.getId();
-        return this.repository.findById(wizardId)
+        return this.wizardRepository.findById(wizardId)
                     .map(wizardToUpdate -> {
                             wizardToUpdate.setName(updatedWizard.getName());
-                            return this.repository.save(wizardToUpdate);
+                            return this.wizardRepository.save(wizardToUpdate);
                         }).orElseThrow(() -> new NotFoundException(
                             String.format(Constant.CustomExMessage.NOT_FOUND_OBJECT, Constant.WIZARD, wizardId)));
     }
 
     public void deleteWizard(Long id) {
-        Wizard wizardToDelete = this.repository.findById(id)
+        Wizard wizardToDelete = this.wizardRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException(
                         String.format(Constant.CustomExMessage.NOT_FOUND_OBJECT, Constant.WIZARD, id)));
         wizardToDelete.disassociateArtifactsRelated();
-        this.repository.delete(wizardToDelete);
+        this.wizardRepository.delete(wizardToDelete);
+    }
+
+    public void assignArtifact(Long wizardId, String artifactId) {
+        Artifact artifactToAssign = this.artifactRepository.findById(artifactId)
+                .orElseThrow(() -> new NotFoundException(
+                        String.format(Constant.CustomExMessage.NOT_FOUND_OBJECT, Constant.ARTIFACT, artifactId)));
+        
+        Wizard wizard = this.wizardRepository.findById(wizardId)
+                .orElseThrow(() ->  new NotFoundException(
+                        String.format(Constant.CustomExMessage.NOT_FOUND_OBJECT, Constant.WIZARD, wizardId)));
+
+        if (artifactToAssign.getWizard() != null)
+            artifactToAssign.getWizard().removeArtifact(artifactToAssign);
+
+        wizard.addArtifact(artifactToAssign);
+        this.artifactRepository.save(artifactToAssign);
+        this.wizardRepository.save(wizard);
     }
 }

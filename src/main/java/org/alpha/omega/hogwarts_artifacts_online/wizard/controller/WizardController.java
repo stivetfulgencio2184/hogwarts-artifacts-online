@@ -74,4 +74,15 @@ public class WizardController {
                         .message("Wizard delete successfully.")
                 .build());
     }
+
+    @PatchMapping(path = "/{wizardId}/artifacts/{artifactId}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Result> assignArtifactToWizard(@PathVariable(value = "wizardId") Long wizardId,
+                                                         @PathVariable(value = "artifactId") String artifactId) {
+        this.service.assignArtifact(wizardId, artifactId);
+        return ResponseEntity.ok(Result.builder()
+                        .flag(Boolean.TRUE)
+                        .code(HttpStatus.OK.value())
+                        .message("Artifact Assignment Success")
+                .build());
+    }
 }
