@@ -30,6 +30,8 @@ public class Wizard  implements Serializable {
 
     public void addArtifact(Artifact artifact) {
         artifact.setWizard(this);
+        if (this.artifacts == null)
+            this.artifacts = new HashSet<>();
         this.artifacts.add(artifact);
     }
 
