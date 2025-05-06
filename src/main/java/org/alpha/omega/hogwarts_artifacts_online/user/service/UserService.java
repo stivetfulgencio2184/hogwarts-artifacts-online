@@ -1,0 +1,23 @@
+package org.alpha.omega.hogwarts_artifacts_online.user.service;
+
+import lombok.RequiredArgsConstructor;
+import org.alpha.omega.hogwarts_artifacts_online.common.Constant;
+import org.alpha.omega.hogwarts_artifacts_online.common.exception.NotFoundException;
+import org.alpha.omega.hogwarts_artifacts_online.entity.User;
+import org.alpha.omega.hogwarts_artifacts_online.user.repository.UserRepository;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+@Service
+@Transactional
+@RequiredArgsConstructor
+public class UserService {
+
+    private UserRepository userRepository;
+
+    public User findUserById(Integer userId) {
+        return this.userRepository.findById(userId)
+                .orElseThrow(() -> new NotFoundException(
+                        String.format(Constant.CustomExMessage.NOT_FOUND_OBJECT, Constant.USER, userId)));
+    }
+}
