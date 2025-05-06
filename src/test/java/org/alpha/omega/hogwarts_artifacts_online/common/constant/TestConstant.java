@@ -2,13 +2,14 @@ package org.alpha.omega.hogwarts_artifacts_online.common.constant;
 
 public class TestConstant {
 
-
     private TestConstant() {}
 
     public static final String ARTIFACT_ID = "10435344876";
     public static final Long WIZARD_ID = 1L;
+    public static final Integer USER_ID = 1;
     public static final String ARTIFACT = "artifact";
     public static final String WIZARD = "wizard";
+    public static final String USER = "user";
 
     public static class Exception {
 
