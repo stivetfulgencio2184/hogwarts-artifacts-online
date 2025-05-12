@@ -28,4 +28,15 @@ public class UserController {
                         .data(UserMapper.INSTANCE.toUserDto(this.userService.findUserById(id)))
                 .build());
     }
+
+    @GetMapping(path = "", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Result> getAllUsers() {
+        return ResponseEntity.ok(Result.builder()
+                        .flag(Boolean.TRUE)
+                        .code(HttpStatus.OK.value())
+                        .message("Find all Success.")
+                        .data(UserMapper.INSTANCE.toUsersDTOs(
+                                this.userService.findAllUsers()))
+                .build());
+    }
 }
