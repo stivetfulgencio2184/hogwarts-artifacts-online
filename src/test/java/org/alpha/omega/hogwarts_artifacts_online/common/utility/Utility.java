@@ -1,6 +1,7 @@
 package org.alpha.omega.hogwarts_artifacts_online.common.utility;
 
 import org.alpha.omega.hogwarts_artifacts_online.entity.Artifact;
+import org.alpha.omega.hogwarts_artifacts_online.entity.User;
 import org.alpha.omega.hogwarts_artifacts_online.entity.Wizard;
 
 import java.util.ArrayList;
@@ -51,5 +52,19 @@ public class Utility {
                     .build())
         );
         return wizards;
+    }
+
+    public static List<User> produceUsers(Integer quantity) {
+        List<User> users = new ArrayList<>();
+        IntStream.range(0, quantity).forEach(index -> {
+            users.add(User.builder()
+                            .id(index + 1)
+                            .description("Description for user: "+(index + 1))
+                            .username("username"+(index + 1))
+                            .password("password"+(index + 1))
+                            .enabled(Boolean.TRUE)
+                    .build());
+        });
+        return users;
     }
 }

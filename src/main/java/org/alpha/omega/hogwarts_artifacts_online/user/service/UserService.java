@@ -8,6 +8,8 @@ import org.alpha.omega.hogwarts_artifacts_online.user.repository.UserRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 @Service
 @Transactional
 @RequiredArgsConstructor
@@ -19,5 +21,9 @@ public class UserService {
         return this.userRepository.findById(userId)
                 .orElseThrow(() -> new NotFoundException(
                         String.format(Constant.CustomExMessage.NOT_FOUND_OBJECT, Constant.USER, userId)));
+    }
+
+    public List<User> findAllUsers() {
+        return this.userRepository.findAll();
     }
 }
