@@ -1,6 +1,7 @@
 package org.alpha.omega.hogwarts_artifacts_online.common.exception.global;
 
 import org.alpha.omega.hogwarts_artifacts_online.common.Constant;
+import org.alpha.omega.hogwarts_artifacts_online.common.exception.AlreadyRegisteredException;
 import org.alpha.omega.hogwarts_artifacts_online.common.exception.NotFoundException;
 import org.alpha.omega.hogwarts_artifacts_online.common.exception.error.FieldError;
 import org.alpha.omega.hogwarts_artifacts_online.response.Result;
@@ -22,6 +23,16 @@ public class GlobalExceptionHandler {
         return Result.builder()
                 .flag(Boolean.FALSE)
                 .code(HttpStatus.NOT_FOUND.value())
+                .message(exception.getMessage())
+                .build();
+    }
+
+    @ExceptionHandler(value = {AlreadyRegisteredException.class})
+    @ResponseStatus(value = HttpStatus.CONFLICT)
+    public Result handleAlreadyRegisteredException(AlreadyRegisteredException exception) {
+        return Result.builder()
+                .flag(Boolean.FALSE)
+                .code(HttpStatus.CONFLICT.value())
                 .message(exception.getMessage())
                 .build();
     }

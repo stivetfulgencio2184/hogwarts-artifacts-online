@@ -2,6 +2,7 @@ package org.alpha.omega.hogwarts_artifacts_online.user.service;
 
 import lombok.RequiredArgsConstructor;
 import org.alpha.omega.hogwarts_artifacts_online.common.Constant;
+import org.alpha.omega.hogwarts_artifacts_online.common.exception.AlreadyRegisteredException;
 import org.alpha.omega.hogwarts_artifacts_online.common.exception.NotFoundException;
 import org.alpha.omega.hogwarts_artifacts_online.entity.User;
 import org.alpha.omega.hogwarts_artifacts_online.user.repository.UserRepository;
@@ -15,7 +16,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class UserService {
 
-    private UserRepository userRepository;
+    private final UserRepository userRepository;
 
     public User findUserById(Integer userId) {
         return this.userRepository.findById(userId)
@@ -25,5 +26,15 @@ public class UserService {
 
     public List<User> findAllUsers() {
         return this.userRepository.findAll();
+    }
+
+    public User saveUser(User userToSave) {
+        User registeredUser = this.userRepository.findByUsername(userToSave.getUsername()).orElse(null);
+
+        if(registeredUser != null)
+            throw new AlreadyRegisteredException(
+                    String.format(Constant
+                            .CustomExMessage.ALREADY_REGISTERED_OBJECT, Constant.USER, userToSave.getUsername()));
+        return this.userRepository.save(userToSave);
     }
 }
