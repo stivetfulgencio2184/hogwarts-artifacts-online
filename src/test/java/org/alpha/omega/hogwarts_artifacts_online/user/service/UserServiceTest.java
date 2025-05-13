@@ -1,6 +1,7 @@
 package org.alpha.omega.hogwarts_artifacts_online.user.service;
 
 import org.alpha.omega.hogwarts_artifacts_online.common.constant.TestConstant;
+import org.alpha.omega.hogwarts_artifacts_online.common.exception.AlreadyRegisteredException;
 import org.alpha.omega.hogwarts_artifacts_online.common.exception.NotFoundException;
 import org.alpha.omega.hogwarts_artifacts_online.common.utility.Utility;
 import org.alpha.omega.hogwarts_artifacts_online.entity.User;
@@ -20,8 +21,7 @@ import java.util.Optional;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(value = MockitoExtension.class)
 class UserServiceTest {
@@ -104,5 +104,58 @@ class UserServiceTest {
         // Then
         assertThat(userList).isNotNull().isEmpty();
         verify(this.userRepository, times(1)).findAll();
+    }
+
+    @Test
+    void testSaveUserAlreadyRegistered() {
+        // Given
+        User userToSave = User.builder()
+                .description("New user")
+                .enabled(Boolean.TRUE)
+                .username("sfulgencio")
+                .password("$$StivetFul2184$$")
+                .build();
+        doThrow(new AlreadyRegisteredException(String
+                .format(TestConstant.Exception.ALREADY_REGISTERED_OBJECT, TestConstant.USER, userToSave.getUsername())))
+                .when(this.userRepository).findByUsername(userToSave.getUsername());
+
+        // When
+        assertThrows(AlreadyRegisteredException.class, () -> this.userService.saveUser(userToSave));
+
+        // Then
+        verify(this.userRepository, times(1)).findByUsername(userToSave.getUsername());
+    }
+
+    @Test
+    void testSaveUser() {
+        // Given
+        User userToSave = User.builder()
+                .description("New user")
+                .enabled(Boolean.TRUE)
+                .username("sfulgencio")
+                .password("$$StivetFul2184$$")
+                .build();
+        User registeredUser = User.builder()
+                .id(TestConstant.USER_ID)
+                .description("New user")
+                .enabled(Boolean.TRUE)
+                .username("sfulgencio")
+                .password("$$StivetFul2184$$")
+                .build();
+        given(this.userRepository.findByUsername(userToSave.getUsername())).willReturn(Optional.empty());
+        given(this.userRepository.save(userToSave)).willReturn(registeredUser);
+
+        // When
+        User savedUser = this.userService.saveUser(userToSave);
+
+        // Then
+        assertThat(savedUser).isNotNull();
+        assertThat(savedUser.getId()).isNotNull();
+        assertThat(savedUser.getDescription()).isEqualTo(userToSave.getDescription());
+        assertThat(savedUser.getEnabled()).isEqualTo(userToSave.getEnabled());
+        assertThat(savedUser.getUsername()).isEqualTo(userToSave.getUsername());
+        assertThat(savedUser.getPassword()).isEqualTo(userToSave.getPassword());
+        verify(this.userRepository, times(1)).findByUsername(userToSave.getUsername());
+        verify(this.userRepository, times(1)).save(userToSave);
     }
 }

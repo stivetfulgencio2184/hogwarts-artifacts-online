@@ -14,5 +14,6 @@ public class Constant {
 
         public static final String INVALID_ARGUMENTS = "Provided arguments are invalid, see data for details.";
         public static final String NOT_FOUND_OBJECT = "Could not find %s with Id: %s";
+        public static final String ALREADY_REGISTERED_OBJECT = "The %s with %s already registered.";
     }
 }

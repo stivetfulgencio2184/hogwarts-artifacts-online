@@ -1,17 +1,24 @@
 package org.alpha.omega.hogwarts_artifacts_online.user.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.alpha.omega.hogwarts_artifacts_online.common.constant.TestConstant;
+import org.alpha.omega.hogwarts_artifacts_online.common.exception.AlreadyRegisteredException;
 import org.alpha.omega.hogwarts_artifacts_online.common.exception.NotFoundException;
 import org.alpha.omega.hogwarts_artifacts_online.common.utility.Utility;
 import org.alpha.omega.hogwarts_artifacts_online.entity.User;
+import org.alpha.omega.hogwarts_artifacts_online.user.mapper.UserMapper;
+import org.alpha.omega.hogwarts_artifacts_online.user.request.UserRequest;
 import org.alpha.omega.hogwarts_artifacts_online.user.service.UserService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -34,6 +41,9 @@ class UserControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
+
+    @Autowired
+    private ObjectMapper mapper;
 
     @Value(value = "${api.endpoint.base-url.v1}")
     private String baseUrl;
@@ -118,5 +128,90 @@ class UserControllerTest {
                 .andExpect(jsonPath("$.message").value("Find all Success."))
                 .andExpect(jsonPath("$.data").isEmpty())
                 .andExpect(jsonPath("$.data").isArray());
+    }
+
+    @Test
+    void testSaveNewUser() throws Exception {
+        // Given
+        UserRequest request = UserRequest.builder()
+                .description("New user")
+                .enabled(Boolean.TRUE)
+                .username("sfulgencio")
+                .password("$$StivetFul2184$$")
+                .build();
+        String json = this.mapper.writeValueAsString(request);
+        User registeredUser = User.builder()
+                .id(TestConstant.USER_ID)
+                .description("New user")
+                .enabled(Boolean.TRUE)
+                .username("sfulgencio")
+                .password("$$StivetFul2184$$")
+                .build();
+        given(this.userService.saveUser(Mockito.any(User.class))).willReturn(registeredUser);
+
+        // When and Then
+        this.mockMvc.perform(post(this.baseUrl + "/users")
+                            .accept(MediaType.APPLICATION_JSON)
+                            .content(json)
+                            .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.flag").value(Boolean.TRUE))
+                .andExpect(jsonPath("$.code").value(HttpStatus.CREATED.value()))
+                .andExpect(jsonPath("$.message").value("New user created."))
+                .andExpect(jsonPath("$.data").isNotEmpty())
+                .andExpect(jsonPath("$.data.id").value(registeredUser.getId()))
+                .andExpect(jsonPath("$.data.description").value(registeredUser.getDescription()))
+                .andExpect(jsonPath("$.data.enabled").value(registeredUser.getEnabled()))
+                .andExpect(jsonPath("$.data.username").value(registeredUser.getUsername()))
+                .andExpect(jsonPath("$.data.password").value(registeredUser.getPassword()));
+    }
+
+    @Test
+    void testSaveNewUserBadRequest() throws Exception {
+        // Given
+        UserRequest request = UserRequest.builder()
+                .description("New user")
+                .enabled(Boolean.TRUE)
+                .password("$$StivetFul2184$$")
+                .build();
+        String json = this.mapper.writeValueAsString(request);
+
+        // When and Then
+        this.mockMvc.perform(post(this.baseUrl + "/users")
+                            .accept(MediaType.APPLICATION_JSON)
+                            .content(json)
+                            .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.flag").value(Boolean.FALSE))
+                .andExpect(jsonPath("$.code").value(HttpStatus.BAD_REQUEST.value()))
+                .andExpect(jsonPath("$.message").value(TestConstant.Exception.INVALID_ARGUMENTS))
+                .andExpect(jsonPath("$.data").isNotEmpty())
+                .andExpect(jsonPath("$.data").isArray());
+    }
+
+    @Test
+    void testSaveNewUserAlreadyRegistered() throws Exception {
+        // Given
+        UserRequest request = UserRequest.builder()
+                .description("New user")
+                .enabled(Boolean.TRUE)
+                .username("sfulgencio")
+                .password("$$StivetFul2184$$")
+                .build();
+        String json = this.mapper.writeValueAsString(request);
+        doThrow(new AlreadyRegisteredException(String
+                .format(TestConstant.Exception.ALREADY_REGISTERED_OBJECT, TestConstant.USER, request.username())))
+                .when(this.userService).saveUser(Mockito.any(User.class));
+
+        // When and Then
+        this.mockMvc.perform(post(this.baseUrl + "/users")
+                            .accept(MediaType.APPLICATION_JSON)
+                            .content(json)
+                            .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isConflict())
+                .andExpect(jsonPath("$.flag").value(Boolean.FALSE))
+                .andExpect(jsonPath("$.code").value(HttpStatus.CONFLICT.value()))
+                .andExpect(jsonPath("$.message").value(
+                        String.format(TestConstant.Exception.ALREADY_REGISTERED_OBJECT, TestConstant.USER, request.username())));
     }
 }
