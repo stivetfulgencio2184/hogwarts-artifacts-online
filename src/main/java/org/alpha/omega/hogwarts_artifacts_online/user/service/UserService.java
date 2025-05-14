@@ -50,4 +50,12 @@ public class UserService {
                 .orElseThrow(() -> new NotFoundException(
                         String.format(Constant.CustomExMessage.NOT_FOUND_OBJECT, Constant.USER, updatedUser.getId())));
     }
+
+    public void deleteUser(Integer userId) {
+        User userToDelete = this.userRepository.findById(userId)
+                .orElseThrow(() -> new NotFoundException(
+                        String.format(Constant.CustomExMessage.NOT_FOUND_OBJECT, Constant.USER, userId)
+                ));
+        this.userRepository.delete(userToDelete);
+    }
 }

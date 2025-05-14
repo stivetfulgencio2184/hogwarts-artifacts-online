@@ -65,4 +65,14 @@ public class UserController {
                         .data(UserMapper.INSTANCE.toUserDto(this.userService.updateUser(updatedUser)))
                 .build());
     }
+
+    @DeleteMapping(path = "/{userId}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Result> deleteUserById(@PathVariable(name = "userId") Integer id) {
+        this.userService.deleteUser(id);
+        return ResponseEntity.ok(Result.builder()
+                        .flag(Boolean.TRUE)
+                        .code(HttpStatus.OK.value())
+                        .message("User deleted successfully")
+                .build());
+    }
 }
