@@ -211,4 +211,37 @@ class UserServiceTest {
         verify(this.userRepository, times(1)).findById(updatedUser.getId());
         verify(this.userRepository, times(1)).save(userToUpdate);
     }
+
+    @Test
+    void testDeleteUserNotFound() {
+        // Given
+        given(this.userRepository.findById(TestConstant.USER_ID)).willReturn(Optional.empty());
+
+        // When
+        assertThrows(NotFoundException.class, () -> this.userService.deleteUser(TestConstant.USER_ID));
+
+        // Then
+        verify(this.userRepository, times(1)).findById(TestConstant.USER_ID);
+    }
+
+    @Test
+    void testDeleteUser() {
+        // Given
+        User userToDelete = User.builder()
+                .id(TestConstant.USER_ID)
+                .description("User to delete")
+                .enabled(Boolean.TRUE)
+                .username("sfulgencio")
+                .password("$#sys_admin#$")
+                .build();
+        given(this.userRepository.findById(TestConstant.USER_ID)).willReturn(Optional.of(userToDelete));
+        doNothing().when(this.userRepository).delete(userToDelete);
+
+        // When
+        this.userService.deleteUser(TestConstant.USER_ID);
+
+        // Then
+        verify(this.userRepository, times(1)).findById(TestConstant.USER_ID);
+        verify(this.userRepository, times(1)).delete(userToDelete);
+    }
 }
