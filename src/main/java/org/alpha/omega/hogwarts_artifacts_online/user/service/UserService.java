@@ -37,4 +37,17 @@ public class UserService {
                             .CustomExMessage.ALREADY_REGISTERED_OBJECT, Constant.USER, userToSave.getUsername()));
         return this.userRepository.save(userToSave);
     }
+
+    public User updateUser(User updatedUser) {
+        return this.userRepository.findById(updatedUser.getId())
+                .map(userToUpdate -> {
+                    userToUpdate.setDescription(updatedUser.getDescription());
+                    userToUpdate.setEnabled(updatedUser.getEnabled());
+                    userToUpdate.setUsername(updatedUser.getUsername());
+                    userToUpdate.setPassword(updatedUser.getPassword());
+                    return this.userRepository.save(userToUpdate);
+                })
+                .orElseThrow(() -> new NotFoundException(
+                        String.format(Constant.CustomExMessage.NOT_FOUND_OBJECT, Constant.USER, updatedUser.getId())));
+    }
 }

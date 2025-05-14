@@ -2,6 +2,7 @@ package org.alpha.omega.hogwarts_artifacts_online.user.controller;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.alpha.omega.hogwarts_artifacts_online.entity.User;
 import org.alpha.omega.hogwarts_artifacts_online.response.Result;
 import org.alpha.omega.hogwarts_artifacts_online.user.mapper.UserMapper;
 import org.alpha.omega.hogwarts_artifacts_online.user.request.UserRequest;
@@ -50,5 +51,18 @@ public class UserController {
                                 this.userService.saveUser(
                                         UserMapper.INSTANCE.toUser(request))))
                         .build());
+    }
+
+    @PutMapping(path = "/{userId}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Result> updateUserById(@RequestBody @Valid UserRequest request,
+                                                 @PathVariable(name = "userId") Integer id) {
+        User updatedUser = UserMapper.INSTANCE.toUser(request);
+        updatedUser.setId(id);
+        return ResponseEntity.ok(Result.builder()
+                        .flag(Boolean.TRUE)
+                        .code(HttpStatus.OK.value())
+                        .message("User updated successfully.")
+                        .data(UserMapper.INSTANCE.toUserDto(this.userService.updateUser(updatedUser)))
+                .build());
     }
 }
