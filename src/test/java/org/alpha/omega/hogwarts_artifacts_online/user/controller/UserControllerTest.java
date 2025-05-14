@@ -1,13 +1,11 @@
 package org.alpha.omega.hogwarts_artifacts_online.user.controller;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.alpha.omega.hogwarts_artifacts_online.common.constant.TestConstant;
 import org.alpha.omega.hogwarts_artifacts_online.common.exception.AlreadyRegisteredException;
 import org.alpha.omega.hogwarts_artifacts_online.common.exception.NotFoundException;
 import org.alpha.omega.hogwarts_artifacts_online.common.utility.Utility;
 import org.alpha.omega.hogwarts_artifacts_online.entity.User;
-import org.alpha.omega.hogwarts_artifacts_online.user.mapper.UserMapper;
 import org.alpha.omega.hogwarts_artifacts_online.user.request.UserRequest;
 import org.alpha.omega.hogwarts_artifacts_online.user.service.UserService;
 import org.junit.jupiter.api.BeforeEach;
@@ -213,5 +211,97 @@ class UserControllerTest {
                 .andExpect(jsonPath("$.code").value(HttpStatus.CONFLICT.value()))
                 .andExpect(jsonPath("$.message").value(
                         String.format(TestConstant.Exception.ALREADY_REGISTERED_OBJECT, TestConstant.USER, request.username())));
+    }
+
+    @Test
+    void testUpdateUserByIdNotFound() throws Exception {
+        // Given
+        UserRequest request = UserRequest.builder()
+                .description("User updated.")
+                .enabled(Boolean.FALSE)
+                .username("sys")
+                .password("$#pass_changed#$")
+                .build();
+        String json = this.mapper.writeValueAsString(request);
+        User updatedUser = User.builder()
+                .id(TestConstant.USER_ID)
+                .description("User updated.")
+                .enabled(Boolean.FALSE)
+                .username("sys")
+                .password("$#pass_changed#$")
+                .build();
+        doThrow(new NotFoundException(String
+                            .format(TestConstant.Exception.NOT_FOUND_OBJECT, TestConstant.USER, TestConstant.USER_ID)))
+                .when(this.userService).updateUser(updatedUser);
+
+        // When and Then
+        this.mockMvc.perform(put(this.baseUrl + "/users/{userId}", TestConstant.USER_ID)
+                            .accept(MediaType.APPLICATION_JSON_VALUE)
+                            .content(json)
+                            .contentType(MediaType.APPLICATION_JSON_VALUE))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.flag").value(Boolean.FALSE))
+                .andExpect(jsonPath("$.code").value(HttpStatus.NOT_FOUND.value()))
+                .andExpect(jsonPath("$.message").value(String
+                        .format(TestConstant.Exception.NOT_FOUND_OBJECT, TestConstant.USER, TestConstant.USER_ID)));
+    }
+
+    @Test
+    void testUpdateUserById() throws Exception {
+        // Given
+        UserRequest request = UserRequest.builder()
+                .description("User updated.")
+                .enabled(Boolean.FALSE)
+                .username("sys")
+                .password("$#pass_changed#$")
+                .build();
+        String json = this.mapper.writeValueAsString(request);
+        User updatedUser = User.builder()
+                .id(TestConstant.USER_ID)
+                .description("User updated.")
+                .enabled(Boolean.FALSE)
+                .username("sys")
+                .password("$#pass_changed#$")
+                .build();
+        given(this.userService.updateUser(updatedUser)).willReturn(updatedUser);
+
+        // When and Then
+        this.mockMvc.perform(put(this.baseUrl + "/users/{userId}", TestConstant.USER_ID)
+                        .accept(MediaType.APPLICATION_JSON_VALUE)
+                        .content(json)
+                        .contentType(MediaType.APPLICATION_JSON_VALUE))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.flag").value(Boolean.TRUE))
+                .andExpect(jsonPath("$.code").value(HttpStatus.OK.value()))
+                .andExpect(jsonPath("$.message").value("User updated successfully."))
+                .andExpect(jsonPath("$.data").isNotEmpty())
+                .andExpect(jsonPath("$.data.id").value(updatedUser.getId()))
+                .andExpect(jsonPath("$.data.description").value(updatedUser.getDescription()))
+                .andExpect(jsonPath("$.data.enabled").value(updatedUser.getEnabled()))
+                .andExpect(jsonPath("$.data.username").value(updatedUser.getUsername()))
+                .andExpect(jsonPath("$.data.password").value(updatedUser.getPassword()));
+    }
+
+    @Test
+    void testUpdateUserByIdBadRequest() throws Exception {
+        // Given
+        UserRequest request = UserRequest.builder()
+                .description("Update description.")
+                .enabled(Boolean.TRUE)
+                .password("$#NewPass#$")
+                .build();
+        String json = this.mapper.writeValueAsString(request);
+
+        // When and Then
+        this.mockMvc.perform(put(this.baseUrl + "/users/{userId}", TestConstant.USER_ID)
+                                .accept(MediaType.APPLICATION_JSON_VALUE)
+                                .content(json)
+                                .contentType(MediaType.APPLICATION_JSON_VALUE))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.flag").value(Boolean.FALSE))
+                .andExpect(jsonPath("$.code").value(HttpStatus.BAD_REQUEST.value()))
+                .andExpect(jsonPath("$.message").value(TestConstant.Exception.INVALID_ARGUMENTS))
+                .andExpect(jsonPath("$.data").isNotEmpty())
+                .andExpect(jsonPath("$.data").isArray());
     }
 }

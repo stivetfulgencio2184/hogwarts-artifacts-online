@@ -158,4 +158,57 @@ class UserServiceTest {
         verify(this.userRepository, times(1)).findByUsername(userToSave.getUsername());
         verify(this.userRepository, times(1)).save(userToSave);
     }
+
+    @Test
+    void testUpdateUserNotFound() {
+        // Given
+        User updatedUser = User.builder()
+                .id(TestConstant.USER_ID)
+                .description("User updated.")
+                .enabled(Boolean.FALSE)
+                .username("sys")
+                .password("$#pass_changed#$")
+                .build();
+        given(this.userRepository.findById(updatedUser.getId())).willReturn(Optional.empty());
+
+        // When
+        assertThrows(NotFoundException.class, () -> this.userService.updateUser(updatedUser));
+
+        // Then
+        verify(this.userRepository, times(1)).findById(updatedUser.getId());
+    }
+
+    @Test
+    void testUpdateUser() {
+        // Given
+        User updatedUser = User.builder()
+                .id(TestConstant.USER_ID)
+                .description("User updated.")
+                .enabled(Boolean.FALSE)
+                .username("sys")
+                .password("$#pass_changed#$")
+                .build();
+        User userToUpdate = User.builder()
+                .id(TestConstant.USER_ID)
+                .description("Sys User.")
+                .enabled(Boolean.TRUE)
+                .username("sys")
+                .password("$#SysAdm#$")
+                .build();
+        given(this.userRepository.findById(TestConstant.USER_ID)).willReturn(Optional.of(userToUpdate));
+        given(this.userRepository.save(userToUpdate)).willReturn(userToUpdate);
+
+        // When
+        User user = this.userService.updateUser(updatedUser);
+
+        // Then
+        assertThat(user).isNotNull();
+        assertThat(user.getId()).isEqualTo(updatedUser.getId());
+        assertThat(user.getDescription()).isEqualTo(updatedUser.getDescription());
+        assertThat(user.getEnabled()).isEqualTo(updatedUser.getEnabled());
+        assertThat(user.getUsername()).isEqualTo(updatedUser.getUsername());
+        assertThat(user.getPassword()).isEqualTo(updatedUser.getPassword());
+        verify(this.userRepository, times(1)).findById(updatedUser.getId());
+        verify(this.userRepository, times(1)).save(userToUpdate);
+    }
 }
