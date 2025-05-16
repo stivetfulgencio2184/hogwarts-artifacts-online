@@ -44,7 +44,6 @@ class UserServiceTest {
         // Given
         User foundUser = User.builder()
                 .id(TestConstant.USER_ID)
-                .description("User description.")
                 .enabled(Boolean.TRUE)
                 .username("sfulgencio")
                 .password("$$SadracFul21$$")
@@ -57,7 +56,6 @@ class UserServiceTest {
         // Then
         assertThat(user).isNotNull();
         assertThat(user.getId()).isEqualTo(foundUser.getId());
-        assertThat(user.getDescription()).isEqualTo(foundUser.getDescription());
         assertThat(user.getEnabled()).isTrue();
         assertThat(user.getUsername()).isEqualTo(foundUser.getUsername());
         assertThat(user.getPassword()).isEqualTo(foundUser.getPassword());
@@ -86,7 +84,6 @@ class UserServiceTest {
         // Then
         assertThat(userList).isNotNull().isNotEmpty().hasSameSizeAs(this.users);
         assertThat(userList.get(3).getId()).isEqualTo(this.users.get(3).getId());
-        assertThat(userList.get(3).getDescription()).isEqualTo(this.users.get(3).getDescription());
         assertThat(userList.get(3).getUsername()).isEqualTo(this.users.get(3).getUsername());
         assertThat(userList.get(3).getPassword()).isEqualTo(this.users.get(3).getPassword());
         assertThat(userList.get(3).getEnabled()).isEqualTo(this.users.get(3).getEnabled());
@@ -110,14 +107,17 @@ class UserServiceTest {
     void testSaveUserAlreadyRegistered() {
         // Given
         User userToSave = User.builder()
-                .description("New user")
                 .enabled(Boolean.TRUE)
                 .username("sfulgencio")
                 .password("$$StivetFul2184$$")
                 .build();
-        doThrow(new AlreadyRegisteredException(String
-                .format(TestConstant.Exception.ALREADY_REGISTERED_OBJECT, TestConstant.USER, userToSave.getUsername())))
-                .when(this.userRepository).findByUsername(userToSave.getUsername());
+        User registeredUser  = User.builder()
+                .id(TestConstant.USER_ID)
+                .enabled(Boolean.TRUE)
+                .username("sfulgencio")
+                .password("$$StivetFul2184$$")
+                .build();
+        given(this.userRepository.findByUsername(userToSave.getUsername())).willReturn(Optional.of(registeredUser));
 
         // When
         assertThrows(AlreadyRegisteredException.class, () -> this.userService.saveUser(userToSave));
@@ -130,14 +130,12 @@ class UserServiceTest {
     void testSaveUser() {
         // Given
         User userToSave = User.builder()
-                .description("New user")
                 .enabled(Boolean.TRUE)
                 .username("sfulgencio")
                 .password("$$StivetFul2184$$")
                 .build();
         User registeredUser = User.builder()
                 .id(TestConstant.USER_ID)
-                .description("New user")
                 .enabled(Boolean.TRUE)
                 .username("sfulgencio")
                 .password("$$StivetFul2184$$")
@@ -151,7 +149,6 @@ class UserServiceTest {
         // Then
         assertThat(savedUser).isNotNull();
         assertThat(savedUser.getId()).isNotNull();
-        assertThat(savedUser.getDescription()).isEqualTo(userToSave.getDescription());
         assertThat(savedUser.getEnabled()).isEqualTo(userToSave.getEnabled());
         assertThat(savedUser.getUsername()).isEqualTo(userToSave.getUsername());
         assertThat(savedUser.getPassword()).isEqualTo(userToSave.getPassword());
@@ -164,7 +161,6 @@ class UserServiceTest {
         // Given
         User updatedUser = User.builder()
                 .id(TestConstant.USER_ID)
-                .description("User updated.")
                 .enabled(Boolean.FALSE)
                 .username("sys")
                 .password("$#pass_changed#$")
@@ -183,14 +179,11 @@ class UserServiceTest {
         // Given
         User updatedUser = User.builder()
                 .id(TestConstant.USER_ID)
-                .description("User updated.")
                 .enabled(Boolean.FALSE)
-                .username("sys")
-                .password("$#pass_changed#$")
+                .username("user")
                 .build();
         User userToUpdate = User.builder()
                 .id(TestConstant.USER_ID)
-                .description("Sys User.")
                 .enabled(Boolean.TRUE)
                 .username("sys")
                 .password("$#SysAdm#$")
@@ -204,10 +197,8 @@ class UserServiceTest {
         // Then
         assertThat(user).isNotNull();
         assertThat(user.getId()).isEqualTo(updatedUser.getId());
-        assertThat(user.getDescription()).isEqualTo(updatedUser.getDescription());
         assertThat(user.getEnabled()).isEqualTo(updatedUser.getEnabled());
         assertThat(user.getUsername()).isEqualTo(updatedUser.getUsername());
-        assertThat(user.getPassword()).isEqualTo(updatedUser.getPassword());
         verify(this.userRepository, times(1)).findById(updatedUser.getId());
         verify(this.userRepository, times(1)).save(userToUpdate);
     }
@@ -229,7 +220,6 @@ class UserServiceTest {
         // Given
         User userToDelete = User.builder()
                 .id(TestConstant.USER_ID)
-                .description("User to delete")
                 .enabled(Boolean.TRUE)
                 .username("sfulgencio")
                 .password("$#sys_admin#$")

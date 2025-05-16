@@ -59,7 +59,6 @@ public class Utility {
         IntStream.range(0, quantity).forEach(index -> {
             users.add(User.builder()
                             .id(index + 1)
-                            .description("Description for user: "+(index + 1))
                             .username("username"+(index + 1))
                             .password("password"+(index + 1))
                             .enabled(Boolean.TRUE)

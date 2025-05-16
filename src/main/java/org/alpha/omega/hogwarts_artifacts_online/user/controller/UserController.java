@@ -6,6 +6,7 @@ import org.alpha.omega.hogwarts_artifacts_online.entity.User;
 import org.alpha.omega.hogwarts_artifacts_online.response.Result;
 import org.alpha.omega.hogwarts_artifacts_online.user.mapper.UserMapper;
 import org.alpha.omega.hogwarts_artifacts_online.user.request.UserRequest;
+import org.alpha.omega.hogwarts_artifacts_online.user.request.UserRequestUpdt;
 import org.alpha.omega.hogwarts_artifacts_online.user.service.UserService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -54,7 +55,7 @@ public class UserController {
     }
 
     @PutMapping(path = "/{userId}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Result> updateUserById(@RequestBody @Valid UserRequest request,
+    public ResponseEntity<Result> updateUserById(@RequestBody @Valid UserRequestUpdt request,
                                                  @PathVariable(name = "userId") Integer id) {
         User updatedUser = UserMapper.INSTANCE.toUser(request);
         updatedUser.setId(id);

@@ -20,9 +20,6 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @Column(name = "description", length = 255)
-    private String description;
-
     @Column(name = "enabled", nullable = false)
     private Boolean enabled;
 
@@ -73,7 +70,6 @@ public class User {
     public String toString() {
         return "User{" +
                 "id=" + id +
-                ", description='" + description + '\'' +
                 ", enabled=" + enabled +
                 ", username='" + username + '\'' +
                 ", password='" + password + '\'' +

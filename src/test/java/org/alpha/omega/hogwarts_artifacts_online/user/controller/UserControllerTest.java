@@ -7,6 +7,7 @@ import org.alpha.omega.hogwarts_artifacts_online.common.exception.NotFoundExcept
 import org.alpha.omega.hogwarts_artifacts_online.common.utility.Utility;
 import org.alpha.omega.hogwarts_artifacts_online.entity.User;
 import org.alpha.omega.hogwarts_artifacts_online.user.request.UserRequest;
+import org.alpha.omega.hogwarts_artifacts_online.user.request.UserRequestUpdt;
 import org.alpha.omega.hogwarts_artifacts_online.user.service.UserService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -59,7 +60,6 @@ class UserControllerTest {
         // Given
         User foundUser = User.builder()
                 .id(TestConstant.USER_ID)
-                .description("User description.")
                 .enabled(Boolean.TRUE)
                 .username("sfulgencio")
                 .password("$$SadracFul21$$")
@@ -108,10 +108,8 @@ class UserControllerTest {
                 .andExpect(jsonPath("$.data").isNotEmpty())
                 .andExpect(jsonPath("$.data").isArray())
                 .andExpect(jsonPath("$.data[3].id").value(this.users.get(3).getId()))
-                .andExpect(jsonPath("$.data[3].description").value(this.users.get(3).getDescription()))
                 .andExpect(jsonPath("$.data[3].enabled").value(this.users.get(3).getEnabled()))
-                .andExpect(jsonPath("$.data[3].username").value(this.users.get(3).getUsername()))
-                .andExpect(jsonPath("$.data[3].password").value(this.users.get(3).getPassword()));
+                .andExpect(jsonPath("$.data[3].username").value(this.users.get(3).getUsername()));
     }
 
     @Test
@@ -133,7 +131,6 @@ class UserControllerTest {
     void testSaveNewUser() throws Exception {
         // Given
         UserRequest request = UserRequest.builder()
-                .description("New user")
                 .enabled(Boolean.TRUE)
                 .username("sfulgencio")
                 .password("$$StivetFul2184$$")
@@ -141,7 +138,6 @@ class UserControllerTest {
         String json = this.mapper.writeValueAsString(request);
         User registeredUser = User.builder()
                 .id(TestConstant.USER_ID)
-                .description("New user")
                 .enabled(Boolean.TRUE)
                 .username("sfulgencio")
                 .password("$$StivetFul2184$$")
@@ -159,17 +155,14 @@ class UserControllerTest {
                 .andExpect(jsonPath("$.message").value("New user created."))
                 .andExpect(jsonPath("$.data").isNotEmpty())
                 .andExpect(jsonPath("$.data.id").value(registeredUser.getId()))
-                .andExpect(jsonPath("$.data.description").value(registeredUser.getDescription()))
                 .andExpect(jsonPath("$.data.enabled").value(registeredUser.getEnabled()))
-                .andExpect(jsonPath("$.data.username").value(registeredUser.getUsername()))
-                .andExpect(jsonPath("$.data.password").value(registeredUser.getPassword()));
+                .andExpect(jsonPath("$.data.username").value(registeredUser.getUsername()));
     }
 
     @Test
     void testSaveNewUserBadRequest() throws Exception {
         // Given
         UserRequest request = UserRequest.builder()
-                .description("New user")
                 .enabled(Boolean.TRUE)
                 .password("$$StivetFul2184$$")
                 .build();
@@ -192,7 +185,6 @@ class UserControllerTest {
     void testSaveNewUserAlreadyRegistered() throws Exception {
         // Given
         UserRequest request = UserRequest.builder()
-                .description("New user")
                 .enabled(Boolean.TRUE)
                 .username("sfulgencio")
                 .password("$$StivetFul2184$$")
@@ -217,19 +209,15 @@ class UserControllerTest {
     @Test
     void testUpdateUserByIdNotFound() throws Exception {
         // Given
-        UserRequest request = UserRequest.builder()
-                .description("User updated.")
+        UserRequestUpdt request = UserRequestUpdt.builder()
                 .enabled(Boolean.FALSE)
                 .username("sys")
-                .password("$#pass_changed#$")
                 .build();
         String json = this.mapper.writeValueAsString(request);
         User updatedUser = User.builder()
                 .id(TestConstant.USER_ID)
-                .description("User updated.")
                 .enabled(Boolean.FALSE)
                 .username("sys")
-                .password("$#pass_changed#$")
                 .build();
         doThrow(new NotFoundException(String
                             .format(TestConstant.Exception.NOT_FOUND_OBJECT, TestConstant.USER, TestConstant.USER_ID)))
@@ -250,19 +238,15 @@ class UserControllerTest {
     @Test
     void testUpdateUserById() throws Exception {
         // Given
-        UserRequest request = UserRequest.builder()
-                .description("User updated.")
+        UserRequestUpdt request = UserRequestUpdt.builder()
                 .enabled(Boolean.FALSE)
                 .username("sys")
-                .password("$#pass_changed#$")
                 .build();
         String json = this.mapper.writeValueAsString(request);
         User updatedUser = User.builder()
                 .id(TestConstant.USER_ID)
-                .description("User updated.")
                 .enabled(Boolean.FALSE)
                 .username("sys")
-                .password("$#pass_changed#$")
                 .build();
         given(this.userService.updateUser(updatedUser)).willReturn(updatedUser);
 
@@ -277,19 +261,15 @@ class UserControllerTest {
                 .andExpect(jsonPath("$.message").value("User updated successfully."))
                 .andExpect(jsonPath("$.data").isNotEmpty())
                 .andExpect(jsonPath("$.data.id").value(updatedUser.getId()))
-                .andExpect(jsonPath("$.data.description").value(updatedUser.getDescription()))
                 .andExpect(jsonPath("$.data.enabled").value(updatedUser.getEnabled()))
-                .andExpect(jsonPath("$.data.username").value(updatedUser.getUsername()))
-                .andExpect(jsonPath("$.data.password").value(updatedUser.getPassword()));
+                .andExpect(jsonPath("$.data.username").value(updatedUser.getUsername()));
     }
 
     @Test
     void testUpdateUserByIdBadRequest() throws Exception {
         // Given
-        UserRequest request = UserRequest.builder()
-                .description("Update description.")
+        UserRequestUpdt request = UserRequestUpdt.builder()
                 .enabled(Boolean.TRUE)
-                .password("$#NewPass#$")
                 .build();
         String json = this.mapper.writeValueAsString(request);
 
