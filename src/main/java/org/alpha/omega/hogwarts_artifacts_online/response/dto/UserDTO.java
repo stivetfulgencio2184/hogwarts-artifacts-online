@@ -7,10 +7,8 @@ import java.util.Set;
 @Builder
 public record UserDTO(
         Integer id,
-        String description,
         Boolean enabled,
         String username,
-        String password,
         Set<RoleDTO> roles
 ) {
 }

@@ -15,10 +15,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -244,6 +241,39 @@ class WizardServiceTest {
         given(this.artifactRepository.save(artifactToAssign)).willReturn(artifactToAssign);
         given(this.wizardRepository.save(wizard)).willReturn(wizard);
         
+        // When
+        this.service.assignArtifact(TestConstant.WIZARD_ID, TestConstant.ARTIFACT_ID);
+
+        // Then
+        assertThat(artifactToAssign.getWizard().getId()).isEqualTo(wizard.getId());
+        assertThat(wizard.getArtifacts()).contains(artifactToAssign);
+        verify(this.artifactRepository, times(1)).findById(TestConstant.ARTIFACT_ID);
+        verify(this.wizardRepository, times(1)).findById(TestConstant.WIZARD_ID);
+        verify(this.artifactRepository, times(1)).save(artifactToAssign);
+        verify(this.wizardRepository, times(1)).save(wizard);
+    }
+
+    @Test
+    void testAssignArtifactRemovingArtifactPreviouslyAssigned() {
+        // Given
+        Wizard wizard = Wizard.builder()
+                .id(TestConstant.WIZARD_ID)
+                .name("Wizard name.")
+                .artifacts(new HashSet<>(new ArrayList<>()))
+                .build();
+        Artifact artifactToAssign = Artifact.builder()
+                .id(TestConstant.ARTIFACT_ID)
+                .description("Artifact to assign.")
+                .name("Rack smart")
+                .description("Artifact description.")
+                .imageUrl("Artifact image url.")
+                .wizard(wizard)
+                .build();
+        given(this.artifactRepository.findById(TestConstant.ARTIFACT_ID)).willReturn(Optional.of(artifactToAssign));
+        given(this.wizardRepository.findById(TestConstant.WIZARD_ID)).willReturn(Optional.of(wizard));
+        given(this.artifactRepository.save(artifactToAssign)).willReturn(artifactToAssign);
+        given(this.wizardRepository.save(wizard)).willReturn(wizard);
+
         // When
         this.service.assignArtifact(TestConstant.WIZARD_ID, TestConstant.ARTIFACT_ID);
 

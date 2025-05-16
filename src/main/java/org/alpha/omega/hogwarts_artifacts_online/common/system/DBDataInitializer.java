@@ -1,9 +1,11 @@
 package org.alpha.omega.hogwarts_artifacts_online.common.system;
 
 import org.alpha.omega.hogwarts_artifacts_online.entity.Artifact;
+import org.alpha.omega.hogwarts_artifacts_online.entity.Role;
 import org.alpha.omega.hogwarts_artifacts_online.entity.User;
 import org.alpha.omega.hogwarts_artifacts_online.entity.Wizard;
 import org.alpha.omega.hogwarts_artifacts_online.artifact.repository.ArtifactRepository;
+import org.alpha.omega.hogwarts_artifacts_online.role.repository.RoleRepository;
 import org.alpha.omega.hogwarts_artifacts_online.user.repository.UserRepository;
 import org.alpha.omega.hogwarts_artifacts_online.wizard.repository.WizardRepository;
 import org.springframework.boot.CommandLineRunner;
@@ -18,11 +20,13 @@ public class DBDataInitializer implements CommandLineRunner {
     private final ArtifactRepository artifactRepository;
     private final WizardRepository wizardRepository;
     private final UserRepository userRepository;
+    private final RoleRepository roleRepository;
 
-    public DBDataInitializer(ArtifactRepository artifactRepository, WizardRepository wizardRepository, UserRepository userRepository) {
+    public DBDataInitializer(ArtifactRepository artifactRepository, WizardRepository wizardRepository, UserRepository userRepository, RoleRepository roleRepository) {
         this.artifactRepository = artifactRepository;
         this.wizardRepository = wizardRepository;
         this.userRepository = userRepository;
+        this.roleRepository = roleRepository;
     }
 
 
@@ -86,21 +90,32 @@ public class DBDataInitializer implements CommandLineRunner {
         thirdWizard.addArtifact(fifthArtifact);
 
         User adminUser = User.builder()
-                .description("Admin User")
                 .username("admin")
                 .password("$$SadracFul21")
                 .enabled(Boolean.TRUE)
                 .build();
 
         User sfulgencioUser = User.builder()
-                .description("Stivet Fulgencio User")
                 .username("sfulgencio")
                 .password("$$StivetFul2184$$")
                 .enabled(Boolean.TRUE)
                 .build();
 
+        Role adminRole = Role.builder()
+                .name("ADMIN")
+                .build();
+
+        Role userRole = Role.builder()
+                .name("USER")
+                .build();
+
+        Role sysAdminRole = Role.builder()
+                .name("SYS_ADMIN")
+                .build();
+
         this.wizardRepository.saveAll(Arrays.asList(firstWizard, secondWizard, thirdWizard));
         this.artifactRepository.save(sixthArtifact);
         this.userRepository.saveAll(Arrays.asList(adminUser, sfulgencioUser));
+        this.roleRepository.saveAll(Arrays.asList(adminRole, userRole, sysAdminRole));
     }
 }

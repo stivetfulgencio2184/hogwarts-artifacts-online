@@ -41,10 +41,8 @@ public class UserService {
     public User updateUser(User updatedUser) {
         return this.userRepository.findById(updatedUser.getId())
                 .map(userToUpdate -> {
-                    userToUpdate.setDescription(updatedUser.getDescription());
                     userToUpdate.setEnabled(updatedUser.getEnabled());
                     userToUpdate.setUsername(updatedUser.getUsername());
-                    userToUpdate.setPassword(updatedUser.getPassword());
                     return this.userRepository.save(userToUpdate);
                 })
                 .orElseThrow(() -> new NotFoundException(
