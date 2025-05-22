@@ -81,7 +81,8 @@ class UserControllerTest {
     void testGetUserByIdNotFound() throws Exception {
         // Given
         doThrow(new NotFoundException(
-                String.format(TestConstant.Exception.NOT_FOUND_OBJECT, TestConstant.USER, TestConstant.USER_ID)))
+                String.format(TestConstant.Exception.NOT_FOUND_OBJECT, TestConstant.USER,
+                        TestConstant.ID, TestConstant.USER_ID)))
                 .when(this.userService).findUserById(TestConstant.USER_ID);
 
         // When and Then
@@ -90,7 +91,8 @@ class UserControllerTest {
                 .andExpect(jsonPath("$.flag").value(Boolean.FALSE))
                 .andExpect(jsonPath("$.code").value(HttpStatus.NOT_FOUND.value()))
                 .andExpect(jsonPath("$.message").value(
-                        String.format(TestConstant.Exception.NOT_FOUND_OBJECT, TestConstant.USER, TestConstant.USER_ID)))
+                        String.format(TestConstant.Exception.NOT_FOUND_OBJECT, TestConstant.USER,
+                                TestConstant.ID, TestConstant.USER_ID)))
                 .andExpect(jsonPath("$.data").isEmpty());
     }
 
@@ -220,7 +222,8 @@ class UserControllerTest {
                 .username("sys")
                 .build();
         doThrow(new NotFoundException(String
-                            .format(TestConstant.Exception.NOT_FOUND_OBJECT, TestConstant.USER, TestConstant.USER_ID)))
+                            .format(TestConstant.Exception.NOT_FOUND_OBJECT, TestConstant.USER,
+                                    TestConstant.ID, TestConstant.USER_ID)))
                 .when(this.userService).updateUser(updatedUser);
 
         // When and Then
@@ -232,7 +235,8 @@ class UserControllerTest {
                 .andExpect(jsonPath("$.flag").value(Boolean.FALSE))
                 .andExpect(jsonPath("$.code").value(HttpStatus.NOT_FOUND.value()))
                 .andExpect(jsonPath("$.message").value(String
-                        .format(TestConstant.Exception.NOT_FOUND_OBJECT, TestConstant.USER, TestConstant.USER_ID)));
+                        .format(TestConstant.Exception.NOT_FOUND_OBJECT, TestConstant.USER,
+                                TestConstant.ID, TestConstant.USER_ID)));
     }
 
     @Test
@@ -290,7 +294,8 @@ class UserControllerTest {
     void testDeleteUserByIdNotFound() throws Exception {
         // Given
         doThrow(new NotFoundException(String.format(
-                                TestConstant.Exception.NOT_FOUND_OBJECT, TestConstant.USER, TestConstant.USER_ID)))
+                                TestConstant.Exception.NOT_FOUND_OBJECT, TestConstant.USER,
+                TestConstant.ID, TestConstant.USER_ID)))
                 .when(this.userService).deleteUser(TestConstant.USER_ID);
 
         // When and Then
@@ -299,7 +304,7 @@ class UserControllerTest {
                 .andExpect(jsonPath("$.flag").value(Boolean.FALSE))
                 .andExpect(jsonPath("$.code").value(HttpStatus.NOT_FOUND.value()))
                 .andExpect(jsonPath("$.message").value(String.format(
-                        TestConstant.Exception.NOT_FOUND_OBJECT, TestConstant.USER, TestConstant.USER_ID)))
+                        TestConstant.Exception.NOT_FOUND_OBJECT, TestConstant.USER, TestConstant.ID, TestConstant.USER_ID)))
                 .andExpect(jsonPath("$.data").isEmpty());
     }
 
