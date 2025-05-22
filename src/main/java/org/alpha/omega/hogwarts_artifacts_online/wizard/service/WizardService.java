@@ -24,7 +24,7 @@ public class WizardService {
     public Wizard findById(Long wizardId) {
         return this.wizardRepository.findById(wizardId)
                 .orElseThrow(() -> new NotFoundException(
-                        String.format(Constant.CustomExMessage.NOT_FOUND_OBJECT, Constant.WIZARD, wizardId)));
+                        String.format(Constant.CustomExMessage.NOT_FOUND_OBJECT, Constant.WIZARD, Constant.ID, wizardId)));
     }
 
     public List<Wizard> findAll() {
@@ -42,13 +42,13 @@ public class WizardService {
                             wizardToUpdate.setName(updatedWizard.getName());
                             return this.wizardRepository.save(wizardToUpdate);
                         }).orElseThrow(() -> new NotFoundException(
-                            String.format(Constant.CustomExMessage.NOT_FOUND_OBJECT, Constant.WIZARD, wizardId)));
+                            String.format(Constant.CustomExMessage.NOT_FOUND_OBJECT, Constant.WIZARD, Constant.ID, wizardId)));
     }
 
     public void deleteWizard(Long id) {
         Wizard wizardToDelete = this.wizardRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException(
-                        String.format(Constant.CustomExMessage.NOT_FOUND_OBJECT, Constant.WIZARD, id)));
+                        String.format(Constant.CustomExMessage.NOT_FOUND_OBJECT, Constant.WIZARD, Constant.ID, id)));
         wizardToDelete.disassociateArtifactsRelated();
         this.wizardRepository.delete(wizardToDelete);
     }
@@ -56,11 +56,11 @@ public class WizardService {
     public void assignArtifact(Long wizardId, String artifactId) {
         Artifact artifactToAssign = this.artifactRepository.findById(artifactId)
                 .orElseThrow(() -> new NotFoundException(
-                        String.format(Constant.CustomExMessage.NOT_FOUND_OBJECT, Constant.ARTIFACT, artifactId)));
+                        String.format(Constant.CustomExMessage.NOT_FOUND_OBJECT, Constant.ARTIFACT, Constant.ID, artifactId)));
         
         Wizard wizard = this.wizardRepository.findById(wizardId)
                 .orElseThrow(() ->  new NotFoundException(
-                        String.format(Constant.CustomExMessage.NOT_FOUND_OBJECT, Constant.WIZARD, wizardId)));
+                        String.format(Constant.CustomExMessage.NOT_FOUND_OBJECT, Constant.WIZARD, Constant.ID, wizardId)));
 
         if (artifactToAssign.getWizard() != null)
             artifactToAssign.getWizard().removeArtifact(artifactToAssign);

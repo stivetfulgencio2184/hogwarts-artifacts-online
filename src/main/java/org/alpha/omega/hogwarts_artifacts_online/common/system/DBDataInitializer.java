@@ -5,8 +5,9 @@ import org.alpha.omega.hogwarts_artifacts_online.entity.Role;
 import org.alpha.omega.hogwarts_artifacts_online.entity.User;
 import org.alpha.omega.hogwarts_artifacts_online.entity.Wizard;
 import org.alpha.omega.hogwarts_artifacts_online.artifact.repository.ArtifactRepository;
+import org.alpha.omega.hogwarts_artifacts_online.role.UserRole;
 import org.alpha.omega.hogwarts_artifacts_online.role.repository.RoleRepository;
-import org.alpha.omega.hogwarts_artifacts_online.user.repository.UserRepository;
+import org.alpha.omega.hogwarts_artifacts_online.user.service.UserService;
 import org.alpha.omega.hogwarts_artifacts_online.wizard.repository.WizardRepository;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
@@ -19,13 +20,13 @@ public class DBDataInitializer implements CommandLineRunner {
 
     private final ArtifactRepository artifactRepository;
     private final WizardRepository wizardRepository;
-    private final UserRepository userRepository;
+    private final UserService userService;
     private final RoleRepository roleRepository;
 
-    public DBDataInitializer(ArtifactRepository artifactRepository, WizardRepository wizardRepository, UserRepository userRepository, RoleRepository roleRepository) {
+    public DBDataInitializer(ArtifactRepository artifactRepository, WizardRepository wizardRepository, UserService userService, RoleRepository roleRepository) {
         this.artifactRepository = artifactRepository;
         this.wizardRepository = wizardRepository;
-        this.userRepository = userRepository;
+        this.userService = userService;
         this.roleRepository = roleRepository;
     }
 
@@ -89,33 +90,32 @@ public class DBDataInitializer implements CommandLineRunner {
                 .build();
         thirdWizard.addArtifact(fifthArtifact);
 
-        User adminUser = User.builder()
+        this.userService.saveUser(User.builder()
                 .username("admin")
                 .password("$$SadracFul21")
                 .enabled(Boolean.TRUE)
-                .build();
+                .build());
 
-        User sfulgencioUser = User.builder()
+        this.userService.saveUser(User.builder()
                 .username("sfulgencio")
                 .password("$$StivetFul2184$$")
                 .enabled(Boolean.TRUE)
-                .build();
+                .build());
 
         Role adminRole = Role.builder()
-                .name("ADMIN")
+                .name(UserRole.ADMIN.name())
                 .build();
 
         Role userRole = Role.builder()
-                .name("USER")
+                .name(UserRole.USER.name())
                 .build();
 
         Role sysAdminRole = Role.builder()
-                .name("SYS_ADMIN")
+                .name(UserRole.SYS_ADMIN.name())
                 .build();
 
         this.wizardRepository.saveAll(Arrays.asList(firstWizard, secondWizard, thirdWizard));
         this.artifactRepository.save(sixthArtifact);
-        this.userRepository.saveAll(Arrays.asList(adminUser, sfulgencioUser));
         this.roleRepository.saveAll(Arrays.asList(adminRole, userRole, sysAdminRole));
     }
 }

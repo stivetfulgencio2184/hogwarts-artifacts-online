@@ -76,7 +76,8 @@ class WizardControllerTest {
         // Given
         given(this.service.findById(TestConstant.WIZARD_ID))
                 .willThrow(new NotFoundException(
-                        String.format(TestConstant.Exception.NOT_FOUND_OBJECT, TestConstant.WIZARD, TestConstant.WIZARD_ID)));
+                        String.format(TestConstant.Exception.NOT_FOUND_OBJECT, TestConstant.WIZARD,
+                                TestConstant.ID, TestConstant.WIZARD_ID)));
 
         // When and Then
         this.mockMvc.perform(get(this.baseUrl + "/wizards/{wizardId}", TestConstant.WIZARD_ID))
@@ -84,7 +85,7 @@ class WizardControllerTest {
                 .andExpect(jsonPath("$.flag").value(Boolean.FALSE))
                 .andExpect(jsonPath("$.code").value(HttpStatus.NOT_FOUND.value()))
                 .andExpect(jsonPath("$.message").value(String.format(
-                        TestConstant.Exception.NOT_FOUND_OBJECT, TestConstant.WIZARD, TestConstant.WIZARD_ID)));
+                        TestConstant.Exception.NOT_FOUND_OBJECT, TestConstant.WIZARD, TestConstant.ID, TestConstant.WIZARD_ID)));
     }
 
     @Test
@@ -229,7 +230,8 @@ class WizardControllerTest {
     void testDeleteWizardByIdNotFound() throws Exception {
         // Given
         doThrow(new NotFoundException(
-                String.format(TestConstant.Exception.NOT_FOUND_OBJECT, TestConstant.WIZARD, TestConstant.WIZARD_ID)))
+                String.format(TestConstant.Exception.NOT_FOUND_OBJECT, TestConstant.WIZARD,
+                        TestConstant.ID, TestConstant.WIZARD_ID)))
                 .when(this.service).deleteWizard(TestConstant.WIZARD_ID);
 
         // When and Then
@@ -238,7 +240,8 @@ class WizardControllerTest {
                 .andExpect(jsonPath("$.flag").value(Boolean.FALSE))
                 .andExpect(jsonPath("$.code").value(HttpStatus.NOT_FOUND.value()))
                 .andExpect(jsonPath("$.message").value(
-                        String.format(TestConstant.Exception.NOT_FOUND_OBJECT, TestConstant.WIZARD, TestConstant.WIZARD_ID)))
+                        String.format(TestConstant.Exception.NOT_FOUND_OBJECT, TestConstant.WIZARD,
+                                TestConstant.ID, TestConstant.WIZARD_ID)))
                 .andExpect(jsonPath("$.data").isEmpty());
     }
 
@@ -261,7 +264,7 @@ class WizardControllerTest {
     void testAssignArtifactToWizardNotFoundArtifact() throws Exception {
         // Given
         doThrow(new NotFoundException(String.format(
-                TestConstant.Exception.NOT_FOUND_OBJECT, TestConstant.ARTIFACT, TestConstant.ARTIFACT_ID)))
+                TestConstant.Exception.NOT_FOUND_OBJECT, TestConstant.ARTIFACT, TestConstant.ID, TestConstant.ARTIFACT_ID)))
                 .when(this.service).assignArtifact(TestConstant.WIZARD_ID, TestConstant.ARTIFACT_ID);
 
         // When and Then
@@ -271,7 +274,8 @@ class WizardControllerTest {
                 .andExpect(jsonPath("$.flag").value(Boolean.FALSE))
                 .andExpect(jsonPath("$.code").value(HttpStatus.NOT_FOUND.value()))
                 .andExpect(jsonPath("$.message").value(String.format(
-                        TestConstant.Exception.NOT_FOUND_OBJECT, TestConstant.ARTIFACT, TestConstant.ARTIFACT_ID)))
+                        TestConstant.Exception.NOT_FOUND_OBJECT, TestConstant.ARTIFACT,
+                        TestConstant.ID, TestConstant.ARTIFACT_ID)))
                 .andExpect(jsonPath("$.data").isEmpty());
     }
 
@@ -279,7 +283,7 @@ class WizardControllerTest {
     void testAssignArtifactToWizardNotFoundWizard() throws Exception {
         // Given
         doThrow(new NotFoundException(String.format(
-                TestConstant.Exception.NOT_FOUND_OBJECT, TestConstant.WIZARD, TestConstant.WIZARD_ID)))
+                TestConstant.Exception.NOT_FOUND_OBJECT, TestConstant.WIZARD, TestConstant.ID, TestConstant.WIZARD_ID)))
                 .when(this.service).assignArtifact(TestConstant.WIZARD_ID, TestConstant.ARTIFACT_ID);
 
         // When and Then
@@ -289,7 +293,7 @@ class WizardControllerTest {
                 .andExpect(jsonPath("$.flag").value(Boolean.FALSE))
                 .andExpect(jsonPath("$.code").value(HttpStatus.NOT_FOUND.value()))
                 .andExpect(jsonPath("$.message").value(String.format(
-                        TestConstant.Exception.NOT_FOUND_OBJECT, TestConstant.WIZARD, TestConstant.WIZARD_ID)))
+                        TestConstant.Exception.NOT_FOUND_OBJECT, TestConstant.WIZARD, TestConstant.ID, TestConstant.WIZARD_ID)))
                 .andExpect(jsonPath("$.data").isEmpty());
     }
 }

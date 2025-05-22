@@ -7,6 +7,8 @@ import org.alpha.omega.hogwarts_artifacts_online.common.exception.error.FieldErr
 import org.alpha.omega.hogwarts_artifacts_online.response.Result;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -52,5 +54,15 @@ public class GlobalExceptionHandler {
                                 .build())
                         .toList())
                 .build(), HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(value = {UsernameNotFoundException.class, BadCredentialsException.class})
+    @ResponseStatus(value = HttpStatus.UNAUTHORIZED)
+    public Result handleAuthenticationException(Exception exception) {
+        return Result.builder()
+                .flag(Boolean.FALSE)
+                .code(HttpStatus.UNAUTHORIZED.value())
+                .message(exception.getMessage())
+                .build();
     }
 }

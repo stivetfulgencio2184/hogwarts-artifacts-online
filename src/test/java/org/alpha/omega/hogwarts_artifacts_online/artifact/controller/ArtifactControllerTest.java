@@ -82,7 +82,8 @@ class ArtifactControllerTest {
         // Given.
         given(this.service.findById(Mockito.anyString()))
                 .willThrow(new NotFoundException(String
-                        .format(TestConstant.Exception.NOT_FOUND_OBJECT, TestConstant.ARTIFACT, TestConstant.ARTIFACT_ID)));
+                        .format(TestConstant.Exception.NOT_FOUND_OBJECT, TestConstant.ARTIFACT,
+                                TestConstant.ID, TestConstant.ARTIFACT_ID)));
 
         // When and Then
         this.mvc.perform(get(this.baseUrl + "/artifacts/{artifactId}", TestConstant.ARTIFACT_ID)
@@ -90,7 +91,8 @@ class ArtifactControllerTest {
                 .andExpect(jsonPath("$.flag").value(Boolean.FALSE))
                 .andExpect(jsonPath("$.code").value(HttpStatus.NOT_FOUND.value()))
                 .andExpect(jsonPath("$.message").value(String
-                        .format(TestConstant.Exception.NOT_FOUND_OBJECT, TestConstant.ARTIFACT, TestConstant.ARTIFACT_ID)))
+                        .format(TestConstant.Exception.NOT_FOUND_OBJECT, TestConstant.ARTIFACT,
+                                TestConstant.ID, TestConstant.ARTIFACT_ID)))
                 .andExpect(jsonPath("$.data").isEmpty());
     }
 
@@ -239,7 +241,8 @@ class ArtifactControllerTest {
     void testDeleteArtifactErrorWithNonExistentId() throws Exception {
         // Given
         doThrow(new NotFoundException(String.format(
-                TestConstant.Exception.NOT_FOUND_OBJECT, TestConstant.ARTIFACT, TestConstant.ARTIFACT_ID)))
+                TestConstant.Exception.NOT_FOUND_OBJECT, TestConstant.ARTIFACT,
+                TestConstant.ID, TestConstant.ARTIFACT_ID)))
                 .when(this.service).delete(TestConstant.ARTIFACT_ID);
 
         // When and Then
@@ -248,7 +251,8 @@ class ArtifactControllerTest {
                 .andExpect(jsonPath("$.flag").value(Boolean.FALSE))
                 .andExpect(jsonPath("$.code").value(HttpStatus.NOT_FOUND.value()))
                 .andExpect(jsonPath("$.message").value(String.format(
-                        TestConstant.Exception.NOT_FOUND_OBJECT, TestConstant.ARTIFACT, TestConstant.ARTIFACT_ID)))
+                        TestConstant.Exception.NOT_FOUND_OBJECT, TestConstant.ARTIFACT,
+                        TestConstant.ID, TestConstant.ARTIFACT_ID)))
                 .andExpect(jsonPath("$.data").isEmpty());
     }
 }
