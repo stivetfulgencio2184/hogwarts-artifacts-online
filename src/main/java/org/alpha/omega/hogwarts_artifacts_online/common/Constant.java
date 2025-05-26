@@ -15,6 +15,17 @@ public class Constant {
         private Security() {}
 
         public static final String WILDCARD_URL_USER = "/users/**";
+        public static final String USER_INFO = "userInfo";
+        public static final String TOKEN = "token";
+        public static final Integer KEY_SIZE = 2048;
+
+        public static class Jwt {
+
+            private Jwt() {}
+
+            public static final String ISSUER = "self";
+            public static final String CLAIM_NAME = "authorities";
+        }
     }
 
     public static class CustomExMessage {

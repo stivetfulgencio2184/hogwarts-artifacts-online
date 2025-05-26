@@ -12,3 +12,5 @@ api:
   endpoint:
     base-url:
       v1: /api/v1
+jwt:
+  expiresIn: 2
