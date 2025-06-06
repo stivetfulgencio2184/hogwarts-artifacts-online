@@ -8,6 +8,9 @@ import com.nimbusds.jose.jwk.source.JWKSource;
 import com.nimbusds.jose.proc.SecurityContext;
 import org.alpha.omega.hogwarts_artifacts_online.common.Constant;
 import org.alpha.omega.hogwarts_artifacts_online.configuration.security.authentication.CryptographyAlgorithms;
+import org.alpha.omega.hogwarts_artifacts_online.configuration.security.authentication.exception.CustomBasicAuthenticationEntryPoint;
+import org.alpha.omega.hogwarts_artifacts_online.configuration.security.authentication.exception.CustomBearerTokenAuthenticationEntryPoint;
+import org.alpha.omega.hogwarts_artifacts_online.configuration.security.authorization.exception.CustomBearerTokenAccessDeniedHandler;
 import org.alpha.omega.hogwarts_artifacts_online.role.UserRole;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -45,9 +48,21 @@ public class SecurityConfiguration {
     @Value(value = "${api.endpoint.base-url.v1}")
     private String baseUrl;
 
-    public SecurityConfiguration() throws NoSuchAlgorithmException {
+    private final CustomBasicAuthenticationEntryPoint customBasicAuthenticationEntryPoint;
+
+    private final CustomBearerTokenAuthenticationEntryPoint customBearerTokenAuthenticationEntryPoint;
+
+    private final CustomBearerTokenAccessDeniedHandler customBearerTokenAccessDeniedHandler;
+
+    public SecurityConfiguration(CustomBasicAuthenticationEntryPoint customBasicAuthenticationEntryPoint,
+                                 CustomBearerTokenAuthenticationEntryPoint customBearerTokenAuthenticationEntryPoint,
+                                 CustomBearerTokenAccessDeniedHandler customBearerTokenAccessDeniedHandler) throws NoSuchAlgorithmException {
+        this.customBasicAuthenticationEntryPoint = customBasicAuthenticationEntryPoint;
+        this.customBearerTokenAuthenticationEntryPoint = customBearerTokenAuthenticationEntryPoint;
+        this.customBearerTokenAccessDeniedHandler = customBearerTokenAccessDeniedHandler;
+        /* Generate a public/private key pair */
         KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance(CryptographyAlgorithms.RSA.name());
-        keyPairGenerator.initialize(Constant.Security.KEY_SIZE);
+        keyPairGenerator.initialize(Constant.Security.KEY_SIZE); // The generated key will have a size of 2048 bits.
         KeyPair keyPair = keyPairGenerator.generateKeyPair();
         this.publicKey = (RSAPublicKey) keyPair.getPublic();
         this.privateKey = (RSAPrivateKey) keyPair.getPrivate();
@@ -69,8 +84,10 @@ public class SecurityConfiguration {
                 )
                 .headers(header -> header.frameOptions(HeadersConfigurer.FrameOptionsConfig::disable)) // This is for H2 browser console access.
                 .csrf(AbstractHttpConfigurer::disable) // Cross-Site Request Forgery
-                .httpBasic(Customizer.withDefaults())
-                .oauth2ResourceServer(oauth2ResourceServer -> oauth2ResourceServer.jwt(Customizer.withDefaults())) // enable jwt verification or jwt login. This is default configuration. Here are used together the: jwtDecoder and jwtAuthenticationConverter methods for jwt authentication and authorization
+                .httpBasic(httpBasic -> httpBasic.authenticationEntryPoint(this.customBasicAuthenticationEntryPoint))
+                .oauth2ResourceServer(oauth2ResourceServer -> oauth2ResourceServer.jwt(Customizer.withDefaults())
+                        .authenticationEntryPoint(this.customBearerTokenAuthenticationEntryPoint)
+                        .accessDeniedHandler(this.customBearerTokenAccessDeniedHandler)) // enable jwt verification or jwt login. This is default configuration. Here are used together the: jwtDecoder and jwtAuthenticationConverter methods for jwt authentication and authorization
                 .sessionManagement(sessionManagement -> sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // Now that used jwt for authentication and authorization, we need turn off the session. This line talks spring security not keep session for any request.
                 .build();
     }
