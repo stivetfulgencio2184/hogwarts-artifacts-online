@@ -102,6 +102,12 @@ public class DBDataInitializer implements CommandLineRunner {
                 .enabled(Boolean.TRUE)
                 .build());
 
+        this.userService.saveUser(User.builder()
+                .username("jarce")
+                .password("$#jdarce#$")
+                .enabled(Boolean.FALSE)
+                .build());
+
         Role adminRole = Role.builder()
                 .name(UserRole.ADMIN.name())
                 .build();

@@ -7,8 +7,11 @@ import org.alpha.omega.hogwarts_artifacts_online.common.exception.error.FieldErr
 import org.alpha.omega.hogwarts_artifacts_online.response.Result;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.authentication.AccountStatusException;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.oauth2.server.resource.InvalidBearerTokenException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -56,13 +59,84 @@ public class GlobalExceptionHandler {
                 .build(), HttpStatus.BAD_REQUEST);
     }
 
+    /**
+     * Spring Security Exceptions
+     * - Authentication Exceptions: UsernameNotFoundException and BadCredentialsException
+     * @param exception
+     * @return
+     */
     @ExceptionHandler(value = {UsernameNotFoundException.class, BadCredentialsException.class})
     @ResponseStatus(value = HttpStatus.UNAUTHORIZED)
     public Result handleAuthenticationException(Exception exception) {
         return Result.builder()
                 .flag(Boolean.FALSE)
                 .code(HttpStatus.UNAUTHORIZED.value())
-                .message(exception.getMessage())
+                .message(Constant.Security.ExceptionMessage.USERNAME_PASSWORD_INCORRECT)
+                .data(exception.getMessage())
+                .build();
+    }
+
+    /**
+     * Spring Security Exceptions
+     * - Authentication Exceptions: AccountStatusException
+     * A user with username and password correctly authenticated, but whose Enabled field is false, intent login.
+     * @param exception
+     * @return
+     */
+    @ExceptionHandler(value = {AccountStatusException.class})
+    @ResponseStatus(value = HttpStatus.UNAUTHORIZED)
+    public Result handleAccountStatusException(AccountStatusException exception) {
+        return Result.builder()
+                .flag(Boolean.FALSE)
+                .code(HttpStatus.UNAUTHORIZED.value())
+                .message(Constant.Security.ExceptionMessage.USER_ACCOUNT_ABNORMAL)
+                .data(exception.getMessage())
+                .build();
+    }
+
+    /**
+     * Spring Security Exceptions
+     * - Authentication Exceptions: InvalidBearerTokenException
+     * @param exception
+     * @return
+     */
+    @ExceptionHandler(value = {InvalidBearerTokenException.class})
+    @ResponseStatus(value = HttpStatus.UNAUTHORIZED)
+    public Result handleInvalidBearerTokenException(InvalidBearerTokenException exception) {
+        return Result.builder()
+                .flag(Boolean.FALSE)
+                .code(HttpStatus.UNAUTHORIZED.value())
+                .message(Constant.Security.ExceptionMessage.INVALID_BEARER_TOKEN)
+                .data(exception.getMessage())
+                .build();
+    }
+
+    /**
+     * Spring Security Exceptions
+     * - Authorization Exception: AccessDeniedException
+     * A user with username and password correctly authenticated intent execute an action about which not have permission.
+     * @param exception
+     * @return
+     */
+    @ExceptionHandler(value = {AccessDeniedException.class})
+    @ResponseStatus(value = HttpStatus.FORBIDDEN)
+    public Result handleAccessDeniedException(AccessDeniedException exception) {
+        return Result.builder()
+                .flag(Boolean.FALSE)
+                .code(HttpStatus.FORBIDDEN.value())
+                .message(Constant.Security.ExceptionMessage.NO_PERMISSION)
+                .data(exception.getMessage())
+                .build();
+    }
+
+    @ExceptionHandler(value = {Exception.class})
+    @ResponseStatus(value = HttpStatus.INTERNAL_SERVER_ERROR)
+    public Result handleInternalServerErrorException(Exception exception){
+        return Result.builder()
+                .flag(Boolean.FALSE)
+                .code(HttpStatus.INTERNAL_SERVER_ERROR.value())
+                .message(Constant.Security.ExceptionMessage.INTERNAL_SERVER_ERROR)
+                .data(exception.getMessage())
                 .build();
     }
 }

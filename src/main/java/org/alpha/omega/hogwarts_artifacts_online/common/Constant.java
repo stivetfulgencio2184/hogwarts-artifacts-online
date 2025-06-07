@@ -26,6 +26,17 @@ public class Constant {
             public static final String ISSUER = "self";
             public static final String CLAIM_NAME = "authorities";
         }
+
+        public static class ExceptionMessage {
+
+            private ExceptionMessage() {}
+
+            public static final String USERNAME_PASSWORD_INCORRECT = "Username or password is incorrect.";
+            public static final String USER_ACCOUNT_ABNORMAL = "User account is abnormal.";
+            public static final String INVALID_BEARER_TOKEN = "The access token provided is expired, revoked, malformed or invalid for other reasons.";
+            public static final String NO_PERMISSION = "No permission.";
+            public static final String INTERNAL_SERVER_ERROR = "A server internal error occurs.";
+        }
     }
 
     public static class CustomExMessage {

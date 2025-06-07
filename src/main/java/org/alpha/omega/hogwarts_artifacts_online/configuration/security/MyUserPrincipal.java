@@ -27,4 +27,7 @@ public record MyUserPrincipal(User user) implements UserDetails {
     public String getUsername() {
         return this.user.getUsername();
     }
+
+    @Override
+    public boolean isEnabled() {  return this.user.getEnabled(); }
 }
