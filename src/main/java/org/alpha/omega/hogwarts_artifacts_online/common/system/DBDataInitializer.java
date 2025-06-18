@@ -11,9 +11,11 @@ import org.alpha.omega.hogwarts_artifacts_online.user.service.UserService;
 import org.alpha.omega.hogwarts_artifacts_online.wizard.repository.WizardRepository;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.Set;
 
 @Component
 public class DBDataInitializer implements CommandLineRunner {
@@ -31,6 +33,7 @@ public class DBDataInitializer implements CommandLineRunner {
     }
 
 
+    @Transactional
     @Override
     public void run(String... args) throws Exception {
         Artifact firstArtifact = Artifact.builder()
@@ -90,24 +93,6 @@ public class DBDataInitializer implements CommandLineRunner {
                 .build();
         thirdWizard.addArtifact(fifthArtifact);
 
-        this.userService.saveUser(User.builder()
-                .username("admin")
-                .password("$$SadracFul21")
-                .enabled(Boolean.TRUE)
-                .build());
-
-        this.userService.saveUser(User.builder()
-                .username("sfulgencio")
-                .password("$$StivetFul2184$$")
-                .enabled(Boolean.TRUE)
-                .build());
-
-        this.userService.saveUser(User.builder()
-                .username("jarce")
-                .password("$#jdarce#$")
-                .enabled(Boolean.FALSE)
-                .build());
-
         Role adminRole = Role.builder()
                 .name(UserRole.ADMIN.name())
                 .build();
@@ -119,9 +104,30 @@ public class DBDataInitializer implements CommandLineRunner {
         Role sysAdminRole = Role.builder()
                 .name(UserRole.SYS_ADMIN.name())
                 .build();
+        this.roleRepository.saveAll(Arrays.asList(adminRole, userRole, sysAdminRole));
+
+        this.userService.saveUser(User.builder()
+                .username("admin")
+                .password("$$SadracFul21")
+                .enabled(Boolean.TRUE)
+                .userRoles(Set.of(adminRole))
+                .build());
+
+        this.userService.saveUser(User.builder()
+                .username("sfulgencio")
+                .password("$$StivetFul2184$$")
+                .enabled(Boolean.TRUE)
+                .userRoles(Set.of(sysAdminRole, userRole))
+                .build());
+
+        this.userService.saveUser(User.builder()
+                .username("jarce")
+                .password("$#jdarce#$")
+                .enabled(Boolean.FALSE)
+                .userRoles(Set.of(userRole))
+                .build());
 
         this.wizardRepository.saveAll(Arrays.asList(firstWizard, secondWizard, thirdWizard));
         this.artifactRepository.save(sixthArtifact);
-        this.roleRepository.saveAll(Arrays.asList(adminRole, userRole, sysAdminRole));
     }
 }
