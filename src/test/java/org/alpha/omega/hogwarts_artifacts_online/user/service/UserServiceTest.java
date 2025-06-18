@@ -12,6 +12,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -28,6 +29,9 @@ class UserServiceTest {
 
     @Mock
     private UserRepository userRepository;
+
+    @Mock
+    private PasswordEncoder passwordEncoder;
 
     @InjectMocks
     private UserService userService;
@@ -138,9 +142,10 @@ class UserServiceTest {
                 .id(TestConstant.USER_ID)
                 .enabled(Boolean.TRUE)
                 .username("sfulgencio")
-                .password("$$StivetFul2184$$")
+                .password(TestConstant.ENCODED_PASSWORD)
                 .build();
         given(this.userRepository.findByUsername(userToSave.getUsername())).willReturn(Optional.empty());
+        given(this.passwordEncoder.encode(userToSave.getPassword())).willReturn(TestConstant.ENCODED_PASSWORD);
         given(this.userRepository.save(userToSave)).willReturn(registeredUser);
 
         // When
