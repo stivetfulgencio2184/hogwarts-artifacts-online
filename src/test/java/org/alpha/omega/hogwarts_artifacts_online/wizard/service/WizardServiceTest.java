@@ -14,6 +14,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.test.context.ActiveProfiles;
 
 import java.util.*;
 
@@ -26,7 +27,8 @@ import static org.mockito.Mockito.verify;
 
 
 @ExtendWith(value = MockitoExtension.class)
-class WizardServiceTest {
+@ActiveProfiles(value = "dev")
+public abstract class WizardServiceTest {
 
     @Mock
     private WizardRepository wizardRepository;

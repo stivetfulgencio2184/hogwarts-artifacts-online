@@ -4,6 +4,8 @@ import org.alpha.omega.hogwarts_artifacts_online.entity.Wizard;
 import org.alpha.omega.hogwarts_artifacts_online.response.dto.WizardDTO;
 import org.alpha.omega.hogwarts_artifacts_online.wizard.request.WizardRequest;
 import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
+import org.mapstruct.Mappings;
 import org.mapstruct.factory.Mappers;
 
 import java.util.List;
@@ -26,5 +28,9 @@ public interface WizardMapper {
 
     List<WizardDTO> toWizardsDTOs(List<Wizard> wizards);
 
+    @Mappings(value = {
+            @Mapping(target = "id", ignore = true),
+            @Mapping(target = "artifacts", ignore = true)
+    })
     Wizard toWizard(WizardRequest request);
 }

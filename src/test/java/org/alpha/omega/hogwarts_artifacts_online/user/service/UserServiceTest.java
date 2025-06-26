@@ -13,6 +13,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.test.context.ActiveProfiles;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -25,7 +26,8 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(value = MockitoExtension.class)
-class UserServiceTest {
+@ActiveProfiles(value = "dev")
+public abstract class UserServiceTest {
 
     @Mock
     private UserRepository userRepository;

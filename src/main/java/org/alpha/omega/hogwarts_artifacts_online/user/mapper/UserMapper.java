@@ -7,6 +7,7 @@ import org.alpha.omega.hogwarts_artifacts_online.user.request.UserRequest;
 import org.alpha.omega.hogwarts_artifacts_online.user.request.UserRequestUpdt;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.mapstruct.Mappings;
 import org.mapstruct.factory.Mappers;
 
 import java.util.List;
@@ -21,7 +22,16 @@ public interface UserMapper {
 
     List<UserDTO> toUsersDTOs(List<User> users);
 
+    @Mappings(value = {
+            @Mapping(target = "id", ignore = true),
+            @Mapping(target = "userRoles", ignore = true)
+    })
     User toUser(UserRequest request);
 
+    @Mappings(value = {
+            @Mapping(target = "id", ignore = true),
+            @Mapping(target = "password", ignore = true),
+            @Mapping(target = "userRoles", ignore = true)
+    })
     User toUser(UserRequestUpdt request);
 }
