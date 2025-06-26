@@ -3,7 +3,6 @@ package org.alpha.omega.hogwarts_artifacts_online.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 
@@ -33,7 +32,7 @@ public class User {
     @JoinTable(name = "user_role",
     joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id", nullable = false, foreignKey = @ForeignKey(name = "user_id_fk")),
     inverseJoinColumns = @JoinColumn(name = "role_id", referencedColumnName = "id", nullable = false, foreignKey = @ForeignKey(name = "role_id_fk")))
-    private Set<Role> userRoles = new HashSet<>();
+    private Set<Role> userRoles;
 
     public void addRole(Role newRole) {
         newRole.getUsers().add(this);

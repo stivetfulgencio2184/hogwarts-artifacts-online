@@ -12,6 +12,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultActions;
@@ -28,11 +29,12 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 /* The next annotations are optionals */
 @DisplayName(value = "Integration tests for Artifacts API endpoints.")
 @Tag(value = "integration")
+@ActiveProfiles(value = "dev")
 /* Integration tests when Spring Security is turn on */
 /* Integration test, as the name suggest, be in focus on integrate different layers of application.
 * We are testing of integrate spring boot application from end to end, there is, from controller, the repository and database.
 * Also mean, not mocking is equals, will around integration test against testing data store in each to database  */
-class ArtifactControllerIntegrationTest {
+public abstract class ArtifactControllerIntegrationTest {
 
     @Autowired
     private MockMvc mockMvc;

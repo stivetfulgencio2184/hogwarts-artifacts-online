@@ -25,7 +25,7 @@ public class Wizard  implements Serializable {
     private String name;
 
     @OneToMany(mappedBy = "wizard", cascade = {CascadeType.PERSIST, CascadeType.MERGE})
-    private Set<Artifact> artifacts = new HashSet<>();
+    private Set<Artifact> artifacts;
 
 
     public void addArtifact(Artifact artifact) {
