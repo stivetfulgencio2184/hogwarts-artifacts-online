@@ -14,3 +14,6 @@ api:
       v1: /api/v1
 jwt:
   expiresIn: 2
+
+server:
+  port: 80
