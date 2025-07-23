@@ -10,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.AccountStatusException;
 import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.InsufficientAuthenticationException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.oauth2.server.resource.InvalidBearerTokenException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -72,6 +73,24 @@ public class GlobalExceptionHandler {
                 .flag(Boolean.FALSE)
                 .code(HttpStatus.UNAUTHORIZED.value())
                 .message(Constant.Security.ExceptionMessage.USERNAME_PASSWORD_INCORRECT)
+                .data(exception.getMessage())
+                .build();
+    }
+
+    /**
+     * Spring Security Exceptions
+     * - Authentication Exceptions: InsufficientAuthenticationException
+     * Launch a get request to wizards, without No auth
+     * @param exception
+     * @return
+     */
+    @ExceptionHandler(value = {InsufficientAuthenticationException.class})
+    @ResponseStatus(value = HttpStatus.UNAUTHORIZED)
+    public Result handleInsufficientAuthenticationException(InsufficientAuthenticationException exception) {
+        return Result.builder()
+                .flag(Boolean.FALSE)
+                .code(HttpStatus.UNAUTHORIZED.value())
+                .message(Constant.Security.ExceptionMessage.LOGIN_CREDENTIALS_MISSING)
                 .data(exception.getMessage())
                 .build();
     }
