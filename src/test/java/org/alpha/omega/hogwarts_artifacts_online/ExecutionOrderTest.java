@@ -12,6 +12,7 @@ import org.junit.jupiter.api.ClassOrderer;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.TestClassOrder;
+import org.springframework.test.context.ActiveProfiles;
 
 /*
 * To skip running tests from base test classes make that base test class abstract and then
@@ -20,6 +21,7 @@ import org.junit.jupiter.api.TestClassOrder;
 * need to run tests in a specific sequence.
 * */
 @TestClassOrder(value = ClassOrderer.OrderAnnotation.class)
+@ActiveProfiles(value = "dev")
 class ExecutionOrderTest {
 
     @Nested
