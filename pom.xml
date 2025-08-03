@@ -32,6 +32,7 @@
 		<org.lombok.version>1.18.36</org.lombok.version>
 		<org.maven.version>3.11.0</org.maven.version>
 		<org.lombok.mapstruct>0.2.0</org.lombok.mapstruct>
+		<spring-cloud-azure.version>5.22.0</spring-cloud-azure.version>
 	</properties>
 	<dependencies>
 		<dependency>
@@ -99,7 +100,33 @@
 			<artifactId>spring-security-test</artifactId>
 			<scope>test</scope>
 		</dependency>
+
+		<!-- MySQL Connector/J is a JDBC Type 4 driver -->
+		<dependency>
+			<groupId>com.mysql</groupId>
+			<artifactId>mysql-connector-j</artifactId>
+			<scope>runtime</scope>
+		</dependency>
+
+		<!-- Azure Key Vault in Spring Boot -->
+		<dependency>
+			<groupId>com.azure.spring</groupId>
+			<artifactId>spring-cloud-azure-starter-keyvault</artifactId>
+		</dependency>
 	</dependencies>
+
+	<!-- The Spring Cloud Azure Bill of Materials (BOM) -->
+	<dependencyManagement>
+		<dependencies>
+			<dependency>
+				<groupId>com.azure.spring</groupId>
+				<artifactId>spring-cloud-azure-dependencies</artifactId>
+				<version>${spring-cloud-azure.version}</version>
+				<type>pom</type>
+				<scope>import</scope>
+			</dependency>
+		</dependencies>
+	</dependencyManagement>
 
 	<build>
 		<plugins>

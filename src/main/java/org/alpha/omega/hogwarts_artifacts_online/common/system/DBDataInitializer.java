@@ -10,6 +10,7 @@ import org.alpha.omega.hogwarts_artifacts_online.role.repository.RoleRepository;
 import org.alpha.omega.hogwarts_artifacts_online.user.service.UserService;
 import org.alpha.omega.hogwarts_artifacts_online.wizard.repository.WizardRepository;
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -18,6 +19,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 @Component
+@Profile(value = "dev")
 public class DBDataInitializer implements CommandLineRunner {
 
     private final ArtifactRepository artifactRepository;
