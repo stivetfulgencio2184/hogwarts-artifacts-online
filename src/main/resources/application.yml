@@ -15,3 +15,39 @@ jwt:
 
 server:
   port: 80
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,env,beans,configprops,heapdump,httpexchanges,loggers,mappings,custom-beans
+  endpoint:
+    health:
+      show-details: always
+      probes:
+        enabled: true
+    env:
+      show-values: always
+    configprops:
+      show-values: always
+  # Enable endpoints Environments Info Contributor. This property expose the custom information we defined here.
+  info:
+    build:
+      enabled: true
+    env:
+      enabled: true
+    git:
+      enabled: true
+      mode: full # Will give us more information. This is really important if we're developing microservice
+    java:
+      enabled: true
+    os:
+      enabled: true
+info:
+  app:
+    name: hogwarts-artifact-online
+    description: A web application that manages artifacts and wizards for Hogwarts School of  Witchcraft and Wizardry.
+    version: @project.version@ # Retrieve the version from pom.xml
+    author: Stivet Fulgencio
+    links:
+      linkedin: https://www.linkedin.com/in/stivet-anthony-fulgencio-obando-42742524/
+      github: https://github.com/stivetfulgencio2184/hogwarts-artifacts-online

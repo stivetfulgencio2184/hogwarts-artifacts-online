@@ -49,4 +49,30 @@ public class Constant {
         public static final String ALREADY_REGISTERED_OBJECT = "The %s with %s already registered.";
         public static final String USERNAME_NOT_FOUND = "Username: %s is not found.";
     }
+
+    public static class Config {
+
+        private Config() {}
+
+        public static class Actuator {
+
+            private Actuator() {}
+
+            public static class Health {
+
+                private Health() {}
+
+                public static final String CLASS_NAME = "health";
+                public static final String USABLE_MEMORY = "usable_memory";
+                public static final String THRESHOLD = "threshold";
+            }
+
+            public static class Info {
+
+                private Info() {}
+
+                public static final String CLASS_NAME = "info";
+            }
+        }
+    }
 }
