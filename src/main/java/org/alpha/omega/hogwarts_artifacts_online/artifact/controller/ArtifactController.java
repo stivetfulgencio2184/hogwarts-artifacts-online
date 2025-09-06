@@ -1,5 +1,6 @@
 package org.alpha.omega.hogwarts_artifacts_online.artifact.controller;
 
+import io.micrometer.core.instrument.MeterRegistry;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.alpha.omega.hogwarts_artifacts_online.entity.Artifact;
@@ -21,9 +22,12 @@ public class ArtifactController {
 
     private final ArtifactService service;
 
+    private final MeterRegistry meterRegistry;
+
     @GetMapping(path = "/{artifactId}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Result> findArtifactById(@PathVariable(name = "artifactId") String id) {
         Artifact foundArtifact = this.service.findById(id);
+        this.meterRegistry.counter("artifact.id." + id).increment();
         return ResponseEntity.ok(Result.builder()
                         .flag(Boolean.TRUE)
                         .code(HttpStatus.OK.value())

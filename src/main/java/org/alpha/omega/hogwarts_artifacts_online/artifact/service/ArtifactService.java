@@ -1,5 +1,6 @@
 package org.alpha.omega.hogwarts_artifacts_online.artifact.service;
 
+import io.micrometer.core.annotation.Timed;
 import lombok.RequiredArgsConstructor;
 import org.alpha.omega.hogwarts_artifacts_online.common.Constant;
 import org.alpha.omega.hogwarts_artifacts_online.entity.Artifact;
@@ -26,6 +27,7 @@ public class ArtifactService {
                         String.format(Constant.CustomExMessage.NOT_FOUND_OBJECT, Constant.ARTIFACT, Constant.ID, id)));
     }
 
+    @Timed(value = "findAllArtifactsService.time")
     public List<Artifact> findAll() {
         return this.repository.findAll();
     }
