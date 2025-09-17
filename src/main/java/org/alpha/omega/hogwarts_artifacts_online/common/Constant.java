@@ -73,6 +73,13 @@ public class Constant {
 
                 public static final String CLASS_NAME = "info";
             }
+
+            public static class Prometheus {
+
+                private Prometheus() {}
+
+                public static final String CLASS_NAME = "prometheus";
+            }
         }
     }
 }
