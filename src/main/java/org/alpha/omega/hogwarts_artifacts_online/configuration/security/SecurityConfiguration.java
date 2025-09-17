@@ -80,9 +80,11 @@ public class SecurityConfiguration {
                         .requestMatchers(HttpMethod.PUT, this.baseUrl + Constant.Security.WILDCARD_URL_USER).hasAuthority(UserRole.ADMIN.name())
                         .requestMatchers(HttpMethod.DELETE, this.baseUrl + Constant.Security.WILDCARD_URL_USER).hasAuthority(UserRole.ADMIN.name())
                         .requestMatchers(AntPathRequestMatcher.antMatcher("/h2-console/**")).permitAll()
-                        .requestMatchers(EndpointRequest.to(Constant.Config.Actuator.Health.CLASS_NAME, Constant.Config.Actuator.Info.CLASS_NAME))
+                        .requestMatchers(EndpointRequest.to(Constant.Config.Actuator.Health.CLASS_NAME, Constant.Config.Actuator.Info.CLASS_NAME,
+                                        Constant.Config.Actuator.Prometheus.CLASS_NAME))
                                         .permitAll()// health and info are public
-                        .requestMatchers(EndpointRequest.toAnyEndpoint().excluding(Constant.Config.Actuator.Health.CLASS_NAME, Constant.Config.Actuator.Info.CLASS_NAME))
+                        .requestMatchers(EndpointRequest.toAnyEndpoint().excluding(Constant.Config.Actuator.Health.CLASS_NAME, Constant.Config.Actuator.Info.CLASS_NAME,
+                                        Constant.Config.Actuator.Prometheus.CLASS_NAME))
                                         .hasAuthority(UserRole.ADMIN.name())// That is only users with admin role can access endpoints excluding: health and info
                         // Others URLs will require Authentication. Urls not public
                         .anyRequest().authenticated() // Always a good idea to put this as last. Disallow everything else

@@ -1,6 +1,7 @@
 package org.alpha.omega.hogwarts_artifacts_online.artifact.service;
 
 import io.micrometer.core.annotation.Timed;
+import io.micrometer.observation.annotation.Observed;
 import lombok.RequiredArgsConstructor;
 import org.alpha.omega.hogwarts_artifacts_online.common.Constant;
 import org.alpha.omega.hogwarts_artifacts_online.entity.Artifact;
@@ -21,6 +22,7 @@ public class ArtifactService {
 
     private final IdWorker idWorker;
 
+    @Observed(name = "artifact", contextualName = "findByIdService")
     public Artifact findById(String id) {
         return this.repository.findById(id)
                 .orElseThrow(() -> new NotFoundException(
